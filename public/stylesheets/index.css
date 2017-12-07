@@ -1,0 +1,28 @@
+#uvcard {
+	background-image: url("/images/uv.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+#device {
+	background-image: url("/images/iot.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#healthtip {
+	background-image: url("/images/ht.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+#profile {
+	background-image: url("/images/up.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.btn-dashboard {
+	width: 250px;
+	display: inline-block;
+}

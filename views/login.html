@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	</head>
+	<body>
+		
+		<!-- NAV BAR-->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Login Page</a>
+				</div>
+			</div>
+		</nav>
+		
+		<div class="container">
+			<form>
+				<div class="form-group">
+					<label for="custName">Name</label>
+					<input type="text" class="form-control" id="custName" placeholder="Enter Full Name">
+				</div>
+				<div class="form-group">
+					<label for="companyname">Company</label>
+					<input type="text" class="form-control" id="companyname" placeholder="Enter Company Name">
+				</div>				
+				<div class="form-group">
+					<label for="exampleInputEmail1">Email address</label>
+					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+					<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+				</div>
+				<div class="form-group">
+					<label for="exampleInputPassword1">Password</label>
+					<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+				</div>
+				<div class="form-check">
+					<label class="form-check-label">
+						<input type="checkbox" class="form-check-input" id="inputcheckbox" name="interest">
+						Check me out
+					</label>
+				</div>
+				<button type="button" id="submitform" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+		
+		<div id="response">
+			
+		</div>
+		
+		<hr>
+		<div style="margin-left: 30px; font-size: 15pt; color: gray"><strong>Sign In</strong></div>
+		<hr>
+		<div class="container">
+			<form>
+				<div class="form-group">
+					<label for="username">Email ID</label>
+					<input type="email" class="form-control" id="username" placeholder="Email Id">
+				</div>
+				<div class="form-group">
+					<label for="signinpwd">Password</label>
+					<input type="password" class="form-control" id="signinpwd" placeholder="Password">
+				</div>
+				<button type="button" id="signin" class="btn btn-primary">Submit</button>
+			</form>					
+		</div>
+		
+		<script>
+			var button= document.getElementById('submitform');
+			button.addEventListener('click', postData);
+			
+			function postData(){
+				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/users/login';
+				var data = {
+					name: $("#custName").val(),
+					company: $("#companyname").val(),
+					email: $("#exampleInputEmail1").val(),
+					password: $( "#exampleInputPassword1" ).val(),
+					check: $("#inputcheckbox").prop("checked")
+				}
+				
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "text",
+					data: data,
+					success: FormSubmit
+				});
+			}
+			
+			function FormSubmit(msg, status, jqXHR){
+				console.log(status);
+				console.log(msg);
+				console.log(jqXHR);
+			}
+			
+			var signInbutton= document.getElementById('signin');
+			signInbutton.addEventListener('click', UserSignIn);
+			
+			function UserSignIn(){
+				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/users/auth';
+				var data = {
+					email: $("#username").val(),
+					password: $( "#signinpwd" ).val()
+				}
+				
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "text",
+					data: data,
+					success: FormValidation,
+					error: FormValidation
+				});			
+			}
+			
+			function FormValidation(msg, status, jqXHR){
+				console.log(status);
+				console.log(msg);
+				console.log(jqXHR);				
+			}
+			
+		</script>
+	</body>
+	
+</html>
