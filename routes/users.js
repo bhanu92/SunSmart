@@ -48,11 +48,11 @@ router.post('/signin', function(req, res, next) {
 					}
 					res.render(path.join(__dirname, '../views/index'),{email: req.body.email});
 				});
-				var encodedEmail = Base64.encode(req.body.email);
+				var encodedEmail = encodeURIComponent(Base64.encode(req.body.email));
 				var mailOptions = {
 					to : "bhanupm2811@gmail.com",
 					subject : "Email Testing",
-					text : 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/userAuthentication?encodedString=' + encodedEmail
+					text : 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/users/userAuthentication?encodedString=' + encodedEmail
 				}
 				console.log(mailOptions);
 				smtpTransport.sendMail(mailOptions, function(error, response){
@@ -76,9 +76,20 @@ router.post('/signin', function(req, res, next) {
 
 // User Authentication
 router.get('/userAuthentication', function(req, res){
-	var _email = Base64.decode(req.query.encodedString);
-	console.log("Decoded email: ", _email);
-	
+	if(req.query.encodedString == "" || req.query.encodedString == null)
+	res.status(200).send("Invalid Email or encoded string");
+	else{
+		var _email = Base64.decode(req.query.encodedString);
+		var updateQuery = { email : _email};
+		var newValues = {authentication : true};
+		User.updateOne(updateQuery, newValues, function(err, result){
+			if (err) {
+				console.log(err.message);
+				return res.status(201).send(err.message);
+			}
+			res.render(path.join(__dirname, '../views/index'), {email: req.body.email});
+		});
+	}
 });
 
 // Sends a token when given valid username/password
