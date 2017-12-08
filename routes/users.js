@@ -5,6 +5,9 @@ var User = require("../Models/usersModel");
 var pass = require('../pass');
 var nodemailer = require("nodemailer");
 var Base64 = require('js-base64').Base64;
+var jwt = require("jwt-simple");
+
+var tokenSecret = 'SunSmart';
 
 
 var smtpTransport = nodemailer.createTransport({
@@ -123,6 +126,8 @@ router.post('/login', function(req, res) {
 				// Does given password hash match the database password hash?
 				if(pass(req.body.password, user.password)){
 					res.render(path.join(__dirname, '../views/index'), {email: req.body.email});
+					var token = jwt.encode({ email: user.email }, tokenSecret);
+					res.status(200).json({ token: token });
 				}
 				else{
 					// Username not in the database
