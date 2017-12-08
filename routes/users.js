@@ -44,9 +44,14 @@ router.post('/signin', function(req, res, next) {
 						console.log(err.message);
 						req.session.error = err.message;
 						req.session.loginMode = 'signup';
-						res.redirect('/');	
+						res.redirect('/');
+						return;
 					}
-					res.render(path.join(__dirname, '../views/index'),{email: req.body.email});
+					req.session.error = "Please verify your registered Email";
+					req.session.loginMode = 'successSignup';
+					res.redirect('/');
+					//res.render(path.join(__dirname, '../views/mainpage'),{userAddedMsg : "User added"});
+					//res.status(200).send("{userAddedMsg : User added}");
 				});
 				var encodedEmail = encodeURIComponent(Base64.encode(req.body.email));
 				var mailOptions = {
@@ -107,6 +112,11 @@ router.post('/login', function(req, res) {
 				// Username not in the database
 				req.session.loginMode = 'login';
 				req.session.error = 'User name does not exist.';
+				res.redirect('/');
+			}
+			else if(user.authentication == false){
+				req.session.loginMode = 'login';
+				req.session.error = 'User Authentication pending!!!';
 				res.redirect('/');
 			}
 			else {
