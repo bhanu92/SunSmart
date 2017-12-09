@@ -149,17 +149,15 @@ router.post('/status', function(req, res) {
 	
 	var authToken = req.body.authToken;
 	
-	try{
-		
+	try{		
 		var decoded = jwt.decode(authToken, tokenSecret);
 		
-		console.log("Decoded Email -"+ decoded.email)
 		if(decoded){ 
 			User.findOne({email: decoded.email}, function(err, user) {
 				console.log(user);
 				if (err){ 
 					//throw err;
-					console.log(err);
+					console.log(err.message);
 				}
 				if (!user) {
 					// Username not in the database
@@ -183,5 +181,9 @@ router.post('/status', function(req, res) {
 	}
 });
 
+
+router.post('/logout', function(req, res) {	
+	res.render(path.join(__dirname, '../views/mainpage'), {validToken : "invalid"});
+});
 
 module.exports = router;

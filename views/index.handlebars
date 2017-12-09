@@ -79,7 +79,7 @@
 						</div>
 						<div id="menu-collapse" class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
-								<li>
+								<li id="logoutli">
 									<a href="javascript:void(0)">
 										<i class="ti-panel"></i>
 										<p>Logout</p>
@@ -318,7 +318,13 @@
 				</div>
 			</div>
 		</div>
-
+		
+		<div style="display: none">
+			<form id="logoutForm" action="/users/logout" method="post">
+				<input name="username" type="password" id="logoutInput">
+			</form>
+		</div>
+		
 		<script src="/js/paper-dashboard.js"></script>
 
 		<script>
@@ -666,11 +672,7 @@
 				var _oldpwd = $('#old-pwd').val();
 				var _newpwd = $('#new-pwd').val();
 				console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
-				$("#userDetailsUpdate").attr("disabled", true);
-				$("#editEmail").attr("disabled", true);
-				$("#editName").attr("disabled", true);
-				$("#old-pwd").attr("disabled", true);
-				$("#new-pwd").attr("disabled", true);
+
 
 				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
 				var url = '/updateUserDetails';
@@ -699,13 +701,30 @@
 					console.log("green");
 					updMsg.style.color = "green";
 					updMsg.style.display = "block";
+					$("#userDetailsUpdate").attr("disabled", true);
+					$("#editEmail").attr("disabled", true);
+					$("#editName").attr("disabled", true);
+					$("#old-pwd").attr("disabled", true);
+					$("#new-pwd").attr("disabled", true);
 				}
 				else{
 					console.log("red");
 					updMsg.style.color = "red";
 					updMsg.style.display = "block";
+					$("#userDetailsUpdate").attr("disabled", false);
+					$("#editEmail").attr("disabled", false);
+					$("#editName").attr("disabled", false);
+					$("#old-pwd").attr("disabled", false);
+					$("#new-pwd").attr("disabled", false);
+					$('#old-pwd').val('');
+					$('#new-pwd').val('');
 				}
 			}
+			
+			$('#logoutli').click(function() {
+				$('#logoutInput').val(username);
+				$('#logoutForm').submit();		
+			});
 
 		</script>
 	</body>

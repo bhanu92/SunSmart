@@ -250,16 +250,6 @@ router.post("/updateUserDetails", function(req, res) {
 		}
 	});
 	
-	// UserModel.updateOne(updateQuery, newValues, function(err, result) {
-	//   if (err) {
-	//     console.log(err.message);
-	//     return res.status(201).send(err.message);
-	//   }
-	//
-	//   res.send({
-	//     message: "Successfully updated"
-	//   });
-	// });
 });
 
 //Get Device data.
