@@ -357,23 +357,8 @@
 				else if(x==4) {
 					var element = document.getElementById("userprofile");
 					changeView(element);
-
-				var url = '/userDetails?email=';
-				var querystring = userEmail;
-				$.ajax({
-					type: "GET",
-					url: url + querystring,
-					dataType: "json",
-					success: handleUserData,
-					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
-						console.log(error);
-					}
-				});
-
 				}
 			}
-
 
 			function changeView(event) {
 				var listactive = document.getElementsByClassName('active');
@@ -436,6 +421,7 @@
 					document.getElementById("navhead").innerHTML = "UV INDEX";
                     break;
 					case 'userprofile':
+					getUserDetails();
                     $('#devices-content').hide();
                     $('#dashboard-content').hide();
                     $('#uvindex-content').hide();
@@ -579,36 +565,54 @@
 					$('#NodeviceData').show();
 				}
 			}
+			
+			
+			function getUserDetails(){
+				var url = '/userDetails?email=';
+				var querystring = userEmail;
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					dataType: "json",
+					success: handleUserData,
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				});				
+			}
+
 
 			function handleUserData(data) {
 				var _name = data.name;
 				var _email = data.email;
-				var htmldata = '<div class="col-lg-6 col-sm-6"><div class="card"><div class="container-fluid" style="padding: 15px">';
-				htmldata += '<form class="form-horizontal" action="/action_page.php">';
+				var htmldata = '<div class="col-lg-6 col-sm-10"><div class="card"><div class="container-fluid" style="padding: 15px">';
+				htmldata += '<form class="form-horizontal" >';
 				htmldata += '<div class="form-group">';
-				htmldata += '<label class="control-label col-sm-2">Name:</label>';
-				htmldata += '<div class="col-sm-10">'
+				htmldata += '<label class="control-label col-sm-3">Name:</label>';
+				htmldata += '<div class="col-sm-8">'
 				htmldata += '<input type="text" id="editName" class="form-control" value="' + _name + '" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '<div class="form-group">';
-				htmldata += '<label class="control-label col-sm-2">Email:</label>';
-				htmldata += '<div class="col-sm-10">'
+				htmldata += '<label class="control-label col-sm-3">Email:</label>';
+				htmldata += '<div class="col-sm-8">'
 				htmldata += '<input type="text" id="editEmail" class="form-control" value="' + _email + '" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '<div class="form-group">';
-				htmldata += '<label class="control-label col-sm-2">Email:</label>';
-				htmldata += '<div class="col-sm-10">'
-				htmldata += '<input type="text" id="old-pwd" class="form-control" placeholder="Enter Old Password" disabled="disabled">';
+				htmldata += '<label class="control-label col-sm-3">Old Password:</label>';
+				htmldata += '<div class="col-sm-8">'
+				htmldata += '<input type="password" id="old-pwd" class="form-control" placeholder="Enter Old Password" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '<div class="form-group">';
-				htmldata += '<label class="control-label col-sm-2">Email:</label>';
-				htmldata += '<div class="col-sm-10">'
-				htmldata += '<input type="text" id="new-pwd" class="form-control" placeholder="Enter New Password" disabled="disabled">';
+				htmldata += '<label class="control-label col-sm-3">New Password:</label>';
+				htmldata += '<div class="col-sm-8">'
+				htmldata += '<input type="password" id="new-pwd" class="form-control" placeholder="Enter New Password" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</div>';
+				htmldata += '<div class= "col-sm-offset-3 col-sm-8"><div id="updateMessage" style="display : none"></div></div>'
 				htmldata += '<div class="form-group">';
 				htmldata += '<div class="col-sm-offset-2 col-sm-10">';
 				htmldata += '<div class="btn-toolbar">'
@@ -618,7 +622,6 @@
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '</form>';
-				htmldata += '<div id="updateMessage" style="display : none"></div>'
 				htmldata += '</div></div></div>';
 				$('#userprofile-content').html(htmldata);
 			}
@@ -627,6 +630,8 @@
 				$("#userDetailsUpdate").attr("disabled", false);
 				$("#editEmail").attr("disabled", false);
 				$("#editName").attr("disabled", false);
+				$("#old-pwd").attr("disabled", false);
+				$("#new-pwd").attr("disabled", false);
 			});
 
 			$(document).on('click', '#userDetailsUpdate', function() {
@@ -638,6 +643,8 @@
 				$("#userDetailsUpdate").attr("disabled", true);
 				$("#editEmail").attr("disabled", true);
 				$("#editName").attr("disabled", true);
+				$("#old-pwd").attr("disabled", true);
+				$("#new-pwd").attr("disabled", true);
 
 				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
 				var url = '/updateUserDetails';
@@ -658,14 +665,19 @@
 			function updateConfirmation(data){
 				var message = data.message;
 				console.log(message);
-				$(#updateMessage).replaceWith(message);
-				if(data.updated = true){
-					$(#updateMessage).css("color" : "green");
-					$(#updateMessage).show();
+				
+				var updMsg = document.getElementById('updateMessage');
+				updMsg.innerHTML = message;
+				console.log($('#updateMessage'));
+				if(data.updated == true){
+					console.log("green");
+					updMsg.style.color = "green";
+					updMsg.style.display = "block";
 				}
 				else{
-					$(#updateMessage).css("color" : "red");
-					$(#updateMessage).show();
+					console.log("red");
+					updMsg.style.color = "red";
+					updMsg.style.display = "block";
 				}
 			}
 

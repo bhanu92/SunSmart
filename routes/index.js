@@ -5,6 +5,7 @@ var path = require('path');
 var Device = require("../Models/devicesModel");
 var DataModel = require("../Models/dataModel");
 var UserModel = require("../Models/usersModel");
+var pass = require('../pass');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
