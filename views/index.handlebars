@@ -470,7 +470,7 @@
 				deviceId=msg.deviceId; //TODO: Need to modify this.
 				$('#registerModal').modal('hide');
 				$('#Nodevice').hide();
-				var htmldata = '<div class="col-lg-6 col-sm-6"><div class="card"><div class="container-fluid" style="padding: 15px">';
+				var htmldata = '<div id="' + msg.deviceId + '"><div class="col-lg-6 col-sm-6"><div class="card"><div class="container-fluid" style="padding: 15px">';
 				htmldata += '<form>';
 				htmldata += '<div class="form-group">';
 				htmldata += '<label>Device ID</label>';
@@ -481,11 +481,37 @@
 				htmldata += '<input type="text" class="form-control" value="' + msg.apikey + '" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</form>';
-				htmldata += '</div></div></div>';
+				htmldata += '<button class="btn" id="' + msg.deviceId + '!#!btn" onclick="DeleteDevice(this)">Delete Device</button>';
+				htmldata += '</div></div></div></div>';
 				$('#registeredDevices-content').append(htmldata);
 				latestDevicedata();
 				//deviceData-content
 			}
+			
+			function DeleteDevice(element){
+				var devId = element.id.split('!#!')[0];
+				var url = '/deleteDevice';
+				var data = {
+					deviceId: devId,
+					email: userEmail
+				}
+			
+				$.ajax({
+					type: "POST",
+					url: url,
+					dataType: "json",
+					data: data,
+					success: function(msg){		
+								$("#"+devId).remove();
+								console.log("Device "+ devId + " is now deleted");
+					},
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				});
+			}
+			
 
 			function getDevices() {
 				var url = '/devices?email=';
