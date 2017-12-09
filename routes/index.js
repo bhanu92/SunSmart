@@ -20,9 +20,7 @@ router.post('/register', function(req, res, next) {
 			error: 'Device Id cannot be empty.'
 		});
 		} else {
-		Device.findOne({
-			deviceId: req.body.deviceId
-			}, function(err, device) {
+		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (err) throw err;
 			if (!device) {
 				var newdevice = new Device({
