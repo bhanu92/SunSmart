@@ -335,4 +335,11 @@ router.get("/.well-known/acme-challenge/Ll3mCA5lCX5OGZr3UH0yE5nVjOhxbZp0lcb3LgQw
   res.sendFile(path.join(__dirname, '../.well-known/acme-challenge/Ll3mCA5lCX5OGZr3UH0yE5nVjOhxbZp0lcb3LgQwKso'));
 });
 
+// LogOut and delete the auth tokenSecret
+router.get('/logout', function(req, res) {
+  res.render(path.join(__dirname, '../views/mainpage'), {
+    validToken: "invalid"
+  });
+});
+
 module.exports = router;

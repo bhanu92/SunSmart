@@ -565,8 +565,8 @@
 					$('#NodeviceData').show();
 				}
 			}
-			
-			
+
+
 			function getUserDetails(){
 				var url = '/userDetails?email=';
 				var querystring = userEmail;
@@ -579,7 +579,7 @@
 						var error = jqXHR.responseJSON.error;
 						console.log(error);
 					}
-				});				
+				});
 			}
 
 
@@ -612,7 +612,7 @@
 				htmldata += '<input type="password" id="new-pwd" class="form-control" placeholder="Enter New Password" disabled="disabled">';
 				htmldata += '</div>';
 				htmldata += '</div>';
-				htmldata += '<div class= "col-sm-offset-3 col-sm-8"><div id="updateMessage" style="display : none"></div></div>'
+				htmldata += '<div class= "col-sm-offset-3 col-sm-8"><div id="updateMessage" style="display : none; font-size: 8pt;"></div></div>'
 				htmldata += '<div class="form-group">';
 				htmldata += '<div class="col-sm-offset-2 col-sm-10">';
 				htmldata += '<div class="btn-toolbar">'
@@ -640,11 +640,6 @@
 				var _oldpwd = $('#old-pwd').val();
 				var _newpwd = $('#new-pwd').val();
 				console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
-				$("#userDetailsUpdate").attr("disabled", true);
-				$("#editEmail").attr("disabled", true);
-				$("#editName").attr("disabled", true);
-				$("#old-pwd").attr("disabled", true);
-				$("#new-pwd").attr("disabled", true);
 
 				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
 				var url = '/updateUserDetails';
@@ -665,7 +660,7 @@
 			function updateConfirmation(data){
 				var message = data.message;
 				console.log(message);
-				
+
 				var updMsg = document.getElementById('updateMessage');
 				updMsg.innerHTML = message;
 				console.log($('#updateMessage'));
@@ -673,11 +668,21 @@
 					console.log("green");
 					updMsg.style.color = "green";
 					updMsg.style.display = "block";
+					$("#userDetailsUpdate").attr("disabled", true);
+					$("#editEmail").attr("disabled", true);
+					$("#editName").attr("disabled", true);
+					$("#old-pwd").attr("disabled", true);
+					$("#new-pwd").attr("disabled", true);
 				}
 				else{
 					console.log("red");
 					updMsg.style.color = "red";
 					updMsg.style.display = "block";
+					$("#userDetailsUpdate").attr("disabled", false);
+					$("#editEmail").attr("disabled", false);
+					$("#editName").attr("disabled", false);
+					$("#old-pwd").attr("disabled", false);
+					$("#new-pwd").attr("disabled", false);
 				}
 			}
 
