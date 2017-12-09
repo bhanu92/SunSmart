@@ -333,7 +333,7 @@
 				}
 				else{
 					console.log("Auth Token is Empty");
-				}	
+				}
 				loadContent();
 				getDevices();
 				if(deviceId != ''){
@@ -598,6 +598,18 @@
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '<div class="form-group">';
+				htmldata += '<label class="control-label col-sm-2">Email:</label>';
+				htmldata += '<div class="col-sm-10">'
+				htmldata += '<input type="text" id="old-pwd" class="form-control" placeholder="Enter Old Password" disabled="disabled">';
+				htmldata += '</div>';
+				htmldata += '</div>';
+				htmldata += '<div class="form-group">';
+				htmldata += '<label class="control-label col-sm-2">Email:</label>';
+				htmldata += '<div class="col-sm-10">'
+				htmldata += '<input type="text" id="new-pwd" class="form-control" placeholder="Enter New Password" disabled="disabled">';
+				htmldata += '</div>';
+				htmldata += '</div>';
+				htmldata += '<div class="form-group">';
 				htmldata += '<div class="col-sm-offset-2 col-sm-10">';
 				htmldata += '<div class="btn-toolbar">'
 				htmldata += '<button type="button" class="btn btn-default" id="userDetailsEdit">Edit</button>';
@@ -606,6 +618,7 @@
 				htmldata += '</div>';
 				htmldata += '</div>';
 				htmldata += '</form>';
+				htmldata += '<div id="updateMessage" style="display : none"></div>'
 				htmldata += '</div></div></div>';
 				$('#userprofile-content').html(htmldata);
 			}
@@ -619,12 +632,14 @@
 			$(document).on('click', '#userDetailsUpdate', function() {
 				var _name = $('#editName').val();
 				var _email = $('#editEmail').val();
+				var _oldpwd = $('#old-pwd').val();
+				var _newpwd = $('#new-pwd').val();
 				console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
 				$("#userDetailsUpdate").attr("disabled", true);
 				$("#editEmail").attr("disabled", true);
 				$("#editName").attr("disabled", true);
 
-				var updatedData = {name : _name, new_email : _email, old_email : userEmail};
+				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
 				var url = '/updateUserDetails';
 				$.ajax({
 					type: "POST",
@@ -641,7 +656,17 @@
 			});
 
 			function updateConfirmation(data){
-				console.log(data);
+				var message = data.message;
+				console.log(message);
+				$(#updateMessage).replaceWith(message);
+				if(data.updated = true){
+					$(#updateMessage).css("color" : "green");
+					$(#updateMessage).show();
+				}
+				else{
+					$(#updateMessage).css("color" : "red");
+					$(#updateMessage).show();
+				}
 			}
 
 		</script>

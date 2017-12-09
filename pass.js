@@ -5,7 +5,8 @@ module.exports = function(pwd, hash) {
   try {
     if (hash) {
       return bcrypt.compareSync(pwd, hash);
-    } else {
+    }
+    else {
       var salt = bcrypt.genSaltSync(3);
       var hash = bcrypt.hashSync(pwd, salt);
 
@@ -14,7 +15,8 @@ module.exports = function(pwd, hash) {
         hash: hash
       };
     }
-  } catch (ex) {
+  }
+  catch (ex) {
     console.log('bcypyt Error-' + ex);
   }
 }
