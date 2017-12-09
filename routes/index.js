@@ -14,12 +14,11 @@ router.get('/', function(req, res, next) {
 /* Register a Device */
 router.post('/register', function(req, res, next) {
 	var apikey = getNewApikey();
-	
+	//console.log('req.body.email '+ req.body.email);
 	if (req.body.deviceId == '') {
-		res.status(400).send({
-			error: 'Device Id cannot be empty.'
-		});
-		} else {
+		res.status(400).send({ error: 'Device Id cannot be empty.' });
+	} 
+	else {
 		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (err) throw err;
 			if (!device) {

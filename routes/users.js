@@ -97,9 +97,9 @@ router.get('/userAuthentication', function(req, res) {
 				console.log(err.message);
 				return res.status(201).send(err.message);
 			}
-			console.log("what is the result-"+ result);
+			console.log(result);
 			var token = jwt.encode({ email: _email}, tokenSecret);
-			res.render(path.join(__dirname, '../views/index'), { email: req.body.email, authToken: token});
+			res.render(path.join(__dirname, '../views/index'), { email: _email, authToken: token});
 		});
 	}
 });
@@ -153,6 +153,7 @@ router.post('/status', function(req, res) {
 		
 		var decoded = jwt.decode(authToken, tokenSecret);
 		
+		console.log("Decoded Email -"+ decoded.email)
 		if(decoded){ 
 			User.findOne({email: decoded.email}, function(err, user) {
 				console.log(user);
@@ -168,7 +169,7 @@ router.post('/status', function(req, res) {
 					// Does given password hash match the database password hash?
 					var token = jwt.encode({ email: user.email}, tokenSecret);
 					console.log('render the webpage');
-					res.render(path.join(__dirname, '../views/index'), { email: decoded.email, authToken: token, username: user.username});
+					res.render(path.join(__dirname, '../views/index'), { email: decoded.email, authToken: token});
 					return;
 				}
 			});	

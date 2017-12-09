@@ -322,13 +322,10 @@
 		<script src="/js/paper-dashboard.js"></script>
 
 		<script>
-			var userEmail = '{{{email}}}';
-			var deviceId = '';
-			var authToken='{{{authToken}}}';
-			var username= '{{{username}}}';
+		
 			$(document).ready(function () {
 				if(authToken != ''){
-					console.log('authToken-' + authToken );
+					//console.log('authToken-' + authToken );
 					window.localStorage.setItem("authToken", authToken);
 				}
 				else{
@@ -340,6 +337,12 @@
 					latestDevicedata();
 				}
 			});
+
+			
+			var userEmail = '{{{email}}}';
+			var deviceId = '';
+			var authToken='{{{authToken}}}';
+			var username= '{{{username}}}';
 
 			function change(x) {
 				if(x==1) {
@@ -357,23 +360,8 @@
 				else if(x==4) {
 					var element = document.getElementById("userprofile");
 					changeView(element);
-
-				var url = '/userDetails?email=';
-				var querystring = userEmail;
-				$.ajax({
-					type: "GET",
-					url: url + querystring,
-					dataType: "json",
-					success: handleUserData,
-					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
-						console.log(error);
-					}
-				});
-
 				}
 			}
-
 
 			function changeView(event) {
 				var listactive = document.getElementsByClassName('active');
@@ -436,6 +424,7 @@
 					document.getElementById("navhead").innerHTML = "UV INDEX";
                     break;
 					case 'userprofile':
+					getUserDetails();
                     $('#devices-content').hide();
                     $('#dashboard-content').hide();
                     $('#uvindex-content').hide();
@@ -578,6 +567,21 @@
 				else {
 					$('#NodeviceData').show();
 				}
+			}
+			
+			function getUserDetails(){
+				var url = '/userDetails?email=';
+				var querystring = userEmail;
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					dataType: "json",
+					success: handleUserData,
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				});						
 			}
 
 			function handleUserData(data) {
