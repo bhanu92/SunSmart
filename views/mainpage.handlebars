@@ -14,15 +14,15 @@
 			.jumbotron{
 				padding: 35vh 0;
 			}
-		</style>	
-			
+		</style>
+
 		<!-- Scripts -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/2.1.1/pwstrength-bootstrap.js"></script>
 	</head>
-	
+
 	<body>
 		<nav class="navbar navbar-expand-lg navbar-fixed-top" style="background-color: #484848">
 			<div class="container">
@@ -47,7 +47,7 @@
 				</div>
 			</div>
 		</nav>
-		
+
 		<section class="jumbotron jumbotron-fluid" >
 			<div class="container" style="color: white">
 				<h2>Protect from UV Radiation</h2>
@@ -56,7 +56,7 @@
 				</p>
 			</div>
 		</section>
-		
+
 		<section class="container-fluid" id="about">
 			<div class="row">
 				<div class="col-lg-3 col-sm-3 text-center" style="padding-bottom: 15px">
@@ -64,17 +64,17 @@
 				</div>
 				<div class="col-lg-9 col-sm-9">
 					<div class="row">
-						<h1>About SunSmart</h1> 
+						<h1>About SunSmart</h1>
 					</div>
 					<div class="row">
 						<p>
 							Sun Smart is your one stop solution to avoid getting sun burnt and protect yourself from it. Using Sun smart you can now get location and time based UV radiation levels by logging into your Sun smart account. You can register your own device which will constantly read values from the UV and GPS sensors and display the readings on your account page. Through our product we aim to prevent and minimize the adverse effects of UV through effective skin cancer prevention and early detection initiatives; improving awareness of vitamin D and promoting a balanced approach to UV exposure.
 						</p>
 					</div>
-				</div>	
+				</div>
 			</div>
 		</section>
-		
+
 		<section class="container-fluid" style="background-color: #F0F0F0" id="learn">
 			<div class="row" style="text-align: center">
 				<h1> Learn How it works</h1>
@@ -98,7 +98,7 @@
 						<div class="col-xs-11 text-center">
 							<h3>Publish data to our server.</h3>
 						</div>
-					</div>								
+					</div>
 				</div>
 			</div>
 			<hr>
@@ -112,7 +112,7 @@
 						<div class="col-xs-11 text-center">
 							<h3>Sense and Analyze UV-index data.</h3>
 						</div>
-					</div>					
+					</div>
 				</div>
 				<div class="col-lg-6 col-sm-6">
 						<div class="col-xs-1 text-center">
@@ -125,11 +125,11 @@
 				</div>
 			</div>
 		</section>
-		
+
 		<section class="container" id="features">
 			<div style="text-align: center">
 				<h1> Features </h1>
-			</div>       
+			</div>
 			<div class="row">
 				<div class="col-lg-3 col-sm-3"></div>
 				<div class="col-lg-6 col-sm-6">
@@ -183,7 +183,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Modal for Log-in-->
 		<div id="loginModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
@@ -202,19 +202,19 @@
 							<div class="form-group">
 								<label for="loginpwd">Password</label>
 								<input name="password" type="password" class="form-control" id="loginpwd" placeholder="Password" required="required">
-							</div> 
+							</div>
 							<div id="login-error">
 							</div>
 							<button type="submit" id="login-submit" class="btn btn-primary">Submit</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</form>	
+						</form>
 					</div>
 					<div class="modal-footer">
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Modal for PopUp -->
 		<div id="popupModal" class="modal fade" role="dialog">
 		  <div class="modal-dialog">
@@ -233,14 +233,14 @@
 			</div>
 		  </div>
 		</div>
-		
+
 		<script>
 		$(document).ready(function() {
 			$("#popupClose").click(function () {
 				$("#signinModal").hide();
 			});
 		});
-		
+
 		var msg= '{{{message}}}';
 		var loginMode= '{{{loginMode}}}';
 		if(msg != ''){
@@ -257,9 +257,9 @@
 				$('#popupModal').modal('show');
 			}
 		}
-		
+
 		</script>
 		<script src="/js/mainpage.js"></script>
 	</body>
-	
+
 </html>

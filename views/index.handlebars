@@ -349,7 +349,7 @@
 				else if(x==4) {
 					var element = document.getElementById("userprofile");
 					changeView(element);
-				
+
 				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/userDetails?email=';
 				var querystring = userEmail;
 				$.ajax({
@@ -362,10 +362,10 @@
 						console.log(error);
 					}
 				});
-				
+
 				}
 			}
-						
+
 
 			function changeView(event) {
 				var listactive = document.getElementsByClassName('active');
@@ -449,7 +449,7 @@
 				$('#registerdevice-error').html('');
 				$("#deviceid").val('');
 			});
-			
+
 			$('#register-submit').on('click', function () {
 				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/register';
 				var data = {
@@ -567,11 +567,11 @@
 					htmldata += '</div></div></div>';
 					$('#deviceData-content').html(htmldata);
 				}
-				else {					
+				else {
 					$('#NodeviceData').show();
 				}
 			}
-			
+
 			function handleUserData(data) {
 				var _name = data.name;
 				var _email = data.email;
@@ -601,13 +601,13 @@
 				htmldata += '</div></div></div>';
 				$('#userprofile-content').html(htmldata);
 			}
-			
+
 			$(document).on('click', '#userDetailsEdit', function() {
 				$("#userDetailsUpdate").attr("disabled", false);
 				$("#editEmail").attr("disabled", false);
 				$("#editName").attr("disabled", false);
-			});			
-			
+			});
+
 			$(document).on('click', '#userDetailsUpdate', function() {
 				var _name = $('#editName').val();
 				var _email = $('#editEmail').val();
@@ -615,7 +615,7 @@
 				$("#userDetailsUpdate").attr("disabled", true);
 				$("#editEmail").attr("disabled", true);
 				$("#editName").attr("disabled", true);
-				
+
 				var updatedData = {name : _name, new_email : _email, old_email : userEmail};
 				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/updateUserDetails';
 				$.ajax({
@@ -631,11 +631,11 @@
 				});
 				userEmail = _email;
 			});
-			
+
 			function updateConfirmation(data){
 				console.log(data);
 			}
-			
+
 		</script>
 	</body>
 

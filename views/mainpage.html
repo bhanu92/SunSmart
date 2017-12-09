@@ -14,7 +14,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
-	
+
 	<body>
 		<nav class="navbar navbar-expand-lg navbar-fixed-top" style="background-color: cadetblue">
 			<div class="container">
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 		</nav>
-		
+
 		<section class="jumbotron" id="about">
 			<div class="container">
 				<h1>What the fuck</h1>
@@ -59,7 +59,7 @@
 		</section>
 		<section class="container" id="learn">
 			<p>
-				<h1>Where does it come from?</h1> 
+				<h1>Where does it come from?</h1>
 				Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
 				<br />
 				The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
@@ -80,7 +80,7 @@
 			<br />
 			Aenean mattis mollis mauris ac pharetra. Sed aliquet lorem non libero eleifend, at sollicitudin neque fermentum. Integer commodo metus in orci suscipit dictum. Duis nec tellus a mi commodo elementum. Donec efficitur augue vel elit lacinia, sed tempor nisl placerat. Aliquam finibus, orci id lacinia lobortis, nibh orci vehicula lacus, eu viverra tellus justo sit amet dolor. Nam dui urna, tempor ut malesuada sit amet, scelerisque non arcu. Duis magna justo, lobortis eu leo nec, imperdiet convallis dolor.
 		</section>
-		
+
 		<!-- Modal for Log-in-->
 		<div id="loginModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
@@ -114,7 +114,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Modal for sign-in-->
 		<div id="signinModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
@@ -133,8 +133,8 @@
 							<div class="form-group">
 								<label for="signinpwd">Password</label>
 								<input type="password" class="form-control" id="signinpwd" placeholder="Password">
-							</div>           
-						</form>	
+							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" id="signin" class="btn btn-primary">Submit</button>
@@ -143,7 +143,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<script>
 			// Select all links with hashes
 			$('a[href*="#"]')
@@ -181,10 +181,10 @@
 					}
 				}
 			});
-			
+
 			var button= document.getElementById('submitform');
 			button.addEventListener('click', postData);
-			
+
 			function postData(){
 				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/users/login';
 				var data = {
@@ -192,7 +192,7 @@
 					email: $("#exampleInputEmail1").val(),
 					password: $( "#exampleInputPassword1" ).val(),
 				}
-				
+
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -201,7 +201,7 @@
 					success: FormSubmit
 				});
 			}
-			
+
 			function FormSubmit(msg, status, jqXHR){
 				console.log(status);
 				if(status == 'success'){
@@ -213,17 +213,17 @@
 					console.log(jqXHR);
 				}
 			}
-			
+
 			var signInbutton= document.getElementById('signin');
 			signInbutton.addEventListener('click', UserSignIn);
-			
+
 			function UserSignIn(){
 				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/users/auth';
 				var data = {
 					email: $("#username").val(),
 					password: $( "#signinpwd" ).val()
 				}
-				
+
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -231,16 +231,16 @@
 					data: data,
 					success: FormValidation,
 					error: FormValidation
-				});			
+				});
 			}
-			
+
 			function FormValidation(msg, status, jqXHR){
 				console.log(status);
 				console.log(msg);
-				console.log(jqXHR);				
+				console.log(jqXHR);
 			}
-			
+
 		</script>
 	</body>
-	
+
 </html>
