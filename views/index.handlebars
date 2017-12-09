@@ -324,8 +324,16 @@
 		<script>
 			var userEmail = '{{{email}}}';
 			var deviceId = '';
-
+			var authToken='{{{authToken}}}';
+			var username= '{{{username}}}';
 			$(document).ready(function () {
+				if(authToken != ''){
+					console.log('authToken-' + authToken );
+					window.localStorage.setItem("authToken", authToken);
+				}
+				else{
+					console.log("Auth Token is Empty");
+				}	
 				loadContent();
 				getDevices();
 				if(deviceId != ''){
@@ -350,7 +358,7 @@
 					var element = document.getElementById("userprofile");
 					changeView(element);
 
-				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/userDetails?email=';
+				var url = '/userDetails?email=';
 				var querystring = userEmail;
 				$.ajax({
 					type: "GET",
@@ -451,7 +459,7 @@
 			});
 
 			$('#register-submit').on('click', function () {
-				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/register';
+				var url = '/register';
 				var data = {
 					deviceId: $("#deviceid").val(),
 					email: userEmail
@@ -494,7 +502,7 @@
 			}
 
 			function getDevices() {
-				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/devices?email=';
+				var url = '/devices?email=';
 				var querystring = encodeURIComponent(userEmail);
 				$.ajax({
 					type: "GET",
@@ -526,7 +534,7 @@
 			}
 
 			function latestDevicedata(){
-				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/deviceData/latest?deviceId=';
+				var url = '/deviceData/latest?deviceId=';
 				var querystring = encodeURIComponent(deviceId);
 				$.ajax({
 					type: "GET",
@@ -617,7 +625,7 @@
 				$("#editName").attr("disabled", true);
 
 				var updatedData = {name : _name, new_email : _email, old_email : userEmail};
-				var url = 'http://ec2-13-59-250-78.us-east-2.compute.amazonaws.com/updateUserDetails';
+				var url = '/updateUserDetails';
 				$.ajax({
 					type: "POST",
 					url: url,

@@ -166,7 +166,7 @@
 								<input name="email" type="email" class="form-control" required="required" id="signin-email" aria-describedby="emailHelp" placeholder="Enter email" >
 								<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
 							</div>
-							<div id="validate-email" style="color:red; font-size: 8pt">*Please provide a valid Email Address</div>
+							<div id="validate-email" style="color:red; font-size: 8pt; display: none">*Please provide a valid Email Address</div>
 							<div class="form-group">
 								<label for="signinpwd">Password</label>
 								<input name="password" type="password" class="form-control" id="signinpwd" placeholder="Password" required="required">
@@ -233,16 +233,22 @@
 			</div>
 		  </div>
 		</div>
+		<div style="display: none">
+			<form id="validateToken" action="/users/status" method="post">
+				<input name="authToken" type="password" id="validateTokenInput">
+			</form>
+		</div>
 
 		<script>
-		$(document).ready(function() {
-			$("#popupClose").click(function () {
-				$("#signinModal").hide();
-			});
-		});
-
 		var msg= '{{{message}}}';
 		var loginMode= '{{{loginMode}}}';
+		var authTokenValid= '{{{validToken}}}'
+		
+		if(authTokenValid == 'invalid'){
+			window.localStorage.removeItem('authToken');
+		}
+		
+		
 		if(msg != ''){
 			console.log('Invalid User');
 			if(loginMode == 'signup'){
@@ -257,6 +263,21 @@
 				$('#popupModal').modal('show');
 			}
 		}
+
+		$(document).ready(function() {
+			$("#popupClose").click(function () {
+				$("#signinModal").hide();
+			});
+			
+			if(window.localStorage.getItem('authToken')) {
+				$('#validateTokenInput').val(window.localStorage.getItem('authToken'));
+				$('#validateToken').submit();
+			}
+			else{
+				console.log('No token found');
+			}
+
+		});
 
 		</script>
 		<script src="/js/mainpage.js"></script>

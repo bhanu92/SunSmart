@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -8,11 +9,18 @@ var exphbs = require('express-handlebars');
 var session = require('express-session');
 var index = require('./routes/index');
 var users = require('./routes/users');
+var https = require('https');
 var err = '';
 var msg = '';
 var loginMode = '';
 
 var app = express();
+
+//Certificate data
+var privateKey  = fs.readFileSync('sslforfree/private.key', 'utf8');
+var certificate = fs.readFileSync('sslforfree/certificate.crt', 'utf8');
+var ca = fs.readFileSync('sslforfree/ca_bundle.crt', 'utf8');
+var options = {key: privateKey, cert: certificate, ca: ca};
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +38,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '.well-known')));
 
 app.use(session({
   resave: false, // don't save session if unmodified
@@ -76,6 +85,15 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.use(function(req, res, next) {
+    if (req.secure) {
+        next();
+    } else {
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
+
 app.listen(80);
+https.createServer(options, app).listen(443);
 
 module.exports = app;

@@ -23,6 +23,7 @@
 }
 
 .btn-dashboard {
-	width: 250px;
+	/* width: 250px; */
+	width: 100%;
 	display: inline-block;
 }
