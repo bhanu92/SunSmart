@@ -191,13 +191,22 @@ router.post("/updateUserDetails", function(req, res) {
     }
     if (pass(old_pwd, user.password)) {
       var saveNew_pwd = pass(new_pwd);
-      user.username = name;
-      user.email = new_email;
-      user.password = saveNew_pwd.hash;
-      user.salt = saveNew_pwd.salt;
-      res.status(200).send({
-        message: "Successfully Updated",
-        updated: true
+      var newValues = {
+        username: name,
+        email: new_email,
+        password: saveNew_pwd.hash,
+        salt: saveNew_pwd.salt
+      };
+      UserModel.updateOne(updateQuery, newValues, function(err, result) {
+        if (err) {
+          console.log(err.message);
+          return res.status(201).send(err.message);
+        }
+
+        res.status(200).send({
+          message: "Successfully Updated",
+          updated: true
+        });
       });
     }
     else {
