@@ -6,7 +6,7 @@
 		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 		<meta name="viewport" content="width=device-width" />
 		<title>SunSmart</title>
-
+		
 		<!--  Fonts and icons     -->
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/stylesheets/animate.css" rel="stylesheet" />
@@ -15,11 +15,11 @@
 		<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
 		<link href="/stylesheets/themify-icons.css" rel="stylesheet">
 		<link href="/stylesheets/index.css" rel="stylesheet">
-
+		
 		<!--   Core JS Files   -->
 		<script src="https://code.jquery.com/jquery-3.2.1.js" type="text/javascript"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
-
+		
 	</head>
 	<body>
 		<div class="wrapper">
@@ -51,7 +51,7 @@
 						</li>
 						<li id="healthtips" class="da4" onclick="changeView(this)">
 							<a href="javascript:void(0)">
-								<i class="ti-info"></i>
+								<i class="ti-pulse"></i>
 								<p>Health Tips</p>
 							</a>
 						</li>
@@ -63,14 +63,20 @@
 						</li>
 						<li id="weatherforcast" class="da6" onclick="changeView(this)">
 							<a href="javascript:void(0)">
-								<i class="ti-user"></i>
+								<i class="ti-bolt"></i>
 								<p>Weather Forcast</p>
+							</a>
+						</li>
+						<li id="publicapi" class="da7" onclick="changeView(this)">
+							<a href="javascript:void(0)">
+								<i class="ti-key"></i>
+								<p>SunSmart API</p>
 							</a>
 						</li>						
 					</ul>
 				</div>
 			</div>
-
+			
 			<div class="main-panel">
 				<nav class="navbar navbar-default">
 					<div class="container-fluid">
@@ -95,10 +101,10 @@
 						</div>
 					</div>
 				</nav>
-
+				
 				<div class="content">
 					<div class="container-fluid">
-
+						
 						<div id="dashboard-content">
 							<div class="row">
 								<div class="col-lg-4 col-sm-4">
@@ -217,9 +223,33 @@
 										</div>
 									</div>
 								</div>
+								<div class="col-lg-4 col-sm-4">
+									<div class="card">
+										<div class="content">
+											<div class="row">
+												<div class="col-xs-5">
+													<div class="icon-big icon-info text-center" id="sunsmartapicard">
+													</div>
+												</div>
+												<div class="col-xs-7">
+													<div class="numbers">
+														<p>SUNSMART API</p>
+													</div>
+												</div>
+											</div>
+											<div class="footer">
+												<hr />
+												<div class="stats">
+													<button class="btn btn-dashboard" onclick="change(6)">Get Your API</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>							
+								
 							</div>
 						</div>
-
+						
 						<div id="devices-content" style="display:none">
 							<div class="row">
 								<div id="Nodevice">
@@ -242,7 +272,7 @@
 								<button id="addDeviceBtn" type="button" class="btn btn-info" data-toggle="modal" data-target="#registerModal">Add Device</button>
 							</div>
 						</div>
-
+						
 						<div id="uvindex-content" style="display:none">
 							<div class="row">
 								<div id="NodeviceData">
@@ -265,7 +295,7 @@
 								<button id="getLatestBtn" type="button" class="btn btn-info" onclick="latestDevicedata()">Get Latest Data</button>
 							</div>
 						</div>
-
+						
 						<div id="healthtips-content" style="display:none">
 							<div class="row">
 								<div class="col-lg-6 col-sm-6">
@@ -282,7 +312,7 @@
 								</div>
 							</div>
 						</div>
-
+						
 						<div id="userprofile-content" style="display:none">						
 							<div class="row">
 								<div class="col-lg-6 col-sm-6">
@@ -296,7 +326,7 @@
 								</div>
 							</div>
 						</div>
-
+						
 						<div id="weatherforcast-content" style="display:none">						
 							<div class="row">
 								<div class="col-lg-5 col-sm-5">
@@ -313,15 +343,29 @@
 										</div>
 									</div>
 								</div>
-							</div>
-							
+							</div>							
 							<div class="row" id="forecastDataCards">								
 							</div>							
 						</div>
 						
+						<div id="publicapi-content" style="display:none">						
+							<div class="row">
+								<div class="col-lg-6 col-sm-6">
+									<div class="card">
+										<div class="header">
+											SunSmart Public API Details
+										</div>
+										<div class="content">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						
 					</div>
 				</div>
-
+				
 				<!-- Here comes the footer-->
 				<footer class="footer">
 					<div class="container-fluid">
@@ -342,7 +386,7 @@
 				</footer>
 			</div>
 		</div>
-
+		
 		<!-- Modal for Register Device-->
 		<div id="registerModal" class="modal fade" role="dialog">
 			<div class="modal-dialog modal-sm">
@@ -377,9 +421,10 @@
 		</div>
 		
 		<script src="/js/paper-dashboard.js"></script>
-
+		
 		<script>
 			var userEmail = '{{{email}}}';
+			var updatedEmail = '';
 			var deviceId = '';
 			var authToken='{{{authToken}}}';
 			var username= '{{{username}}}';
@@ -397,7 +442,7 @@
 					//latestDevicedata();
 				}
 			});
-
+			
 			function change(x) {
 				if(x==1) {
 					var element = document.getElementById("devices");
@@ -419,11 +464,15 @@
 					var element = document.getElementById("weatherforcast");
 					changeView(element);
 				}
+				else if(x==6) {
+					var element = document.getElementById("publicapi");
+					changeView(element);
+				}
 			}
-
+			
 			function changeView(event) {
 				var listactive = document.getElementsByClassName('active');
-
+				
 				if (listactive.length > 0) {
 					var flagActive = true;
 					while (flagActive) {
@@ -431,22 +480,22 @@
 						for (var i = 0; i < listactive.length; i++) {
 							listactive[i].className = listactive[i].className.replace(/\active\b/g, "");
 						}
-
+						
 						var isEmpty = document.getElementsByClassName('active');
 						if (isEmpty.length == 0) {
 							flagActive = false;
 						}
 					}
 				}
-
+				
 				var classes = document.getElementsByClassName(event.className.split(' ')[0]);
 				for (var i = 0; i < classes.length; i++) {
 					classes[i].className += " active";
 				}
-
+				
 				loadContent(event.id);
 			}
-
+			
 			function loadContent(id) {
 				switch (id) {
 					case 'dashboard':
@@ -455,6 +504,7 @@
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#dashboard-content').show();
 					document.getElementById("navhead").innerHTML = "DASHBOARD";
                     break;
@@ -464,6 +514,7 @@
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#devices-content').show();
 					document.getElementById("navhead").innerHTML = "DEVICES";
                     break;
@@ -473,6 +524,7 @@
                     $('#uvindex-content').hide();
                     $('#userprofile-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#healthtips-content').show();
 					document.getElementById("navhead").innerHTML = "HEALTH TIPS";
                     break;
@@ -482,6 +534,7 @@
                     $('#healthtips-content').hide();
                     $('#userprofile-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#uvindex-content').show();
 					document.getElementById("navhead").innerHTML = "UV INDEX";
                     break;
@@ -492,6 +545,7 @@
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#userprofile-content').show();
 					document.getElementById("navhead").innerHTML = "USER PROFILE";
                     break;
@@ -501,20 +555,32 @@
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
                     $('#userprofile-content').hide();
+					$('#publicapi-content').hide();
 					$('#weatherforcast-content').show();
 					document.getElementById("navhead").innerHTML = "WEATHER FORECAST";
                     break;
+					case 'publicapi':
+                    $('#devices-content').hide();
+                    $('#dashboard-content').hide();
+                    $('#uvindex-content').hide();
+                    $('#healthtips-content').hide();
+                    $('#userprofile-content').hide();
+					$('#weatherforcast-content').hide();
+					$('#publicapi-content').show();
+					document.getElementById("navhead").innerHTML = "SUNSMART API";					
+                    break;				
 					default:
                     $('#devices-content').hide();
                     $('#userprofile-content').hide();
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
 					$('#weatherforcast-content').hide();
+					$('#publicapi-content').hide();
                     $('#dashboard-content').show();
 					document.getElementById("navhead").innerHTML = "DASHBOARD";
 				}
 			}
-
+			
 			$('#addDeviceBtn').on('click', function () {
 				$('#registerdevice-error').html('');
 				$("#deviceid").val('');
@@ -530,7 +596,7 @@
 					responseType: "json",
 					success: forecast,
 					error: function (jqXHR, status, error) {
-							console.log(jqXHR.responseJSON);
+						console.log(jqXHR.responseJSON);
 					}
 				});
 			});
@@ -553,14 +619,14 @@
 				}
 				$('#forecastDataCards').html(htmlData);
 			}			
-
+			
 			$('#register-submit').on('click', function () {
 				var url = '/register';
 				var data = {
 					deviceId: $("#deviceid").val(),
 					email: userEmail
 				}
-
+				
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -572,10 +638,10 @@
 						$('#registerdevice-error').html(error);
 					}
 				});
-
+				
 				deviceId=$("#deviceid").val();
 			});
-
+			
 			function AppendRegisteredDevice(msg) {
 				//Update devices list
 				devicesList.push(msg.deviceId);
@@ -606,19 +672,19 @@
 					deviceId: devId,
 					email: userEmail
 				}
-			
+				
 				$.ajax({
 					type: "POST",
 					url: url,
 					dataType: "json",
 					data: data,
 					success: function(msg){
-								var index = devicesList.indexOf(devId);
-								if (index > -1) {
-									devicesList.splice(index, 1);
-								}
-								$("#"+devId).remove();
-								//console.log("Device "+ devId + " is now deleted");
+						var index = devicesList.indexOf(devId);
+						if (index > -1) {
+							devicesList.splice(index, 1);
+						}
+						$("#"+devId).remove();
+						//console.log("Device "+ devId + " is now deleted");
 					},
 					error: function (jqXHR) {
 						var error = jqXHR.responseJSON.error;
@@ -627,7 +693,7 @@
 				});
 			}
 			
-
+			
 			function getDevices() {
 				var url = '/devices?email=';
 				var querystring = encodeURIComponent(userEmail);
@@ -642,7 +708,7 @@
 					}
 				})
 			}
-
+			
 			function loadRegistedredDevices(msg) {
 				if (msg.devices) {
 					$('#Nodevice').hide();
@@ -653,7 +719,7 @@
 					//console.log(devicesList);
 					if(devicesList.length == 0){
 						$('#Nodevice').show();
-					}else{
+						}else{
 						//Start loading UV data from devices					
 					}
 				}
@@ -681,7 +747,7 @@
 			function loadUVData(msg){
 				console.log(msg);			
 			}
-
+			
 			function latestDevicedata123(){	//TODO Use this later			
 				var url = '/deviceData/latest?deviceId=';
 				var querystring = encodeURIComponent(devicesList[0]);
@@ -696,7 +762,7 @@
 					}
 				});
 			}
-		
+			
 			
 			function loadUVData123(msg){
 				//console.log(msg.data)
@@ -744,8 +810,8 @@
 					}
 				});				
 			}
-
-
+			
+			
 			function handleUserData(data) {
 				var _name = data.name;
 				var _email = data.email;
@@ -788,7 +854,7 @@
 				htmldata += '</div></div></div>';
 				$('#userprofile-content').html(htmldata);
 			}
-
+			
 			$(document).on('click', '#userDetailsEdit', function() {
 				$("#userDetailsUpdate").attr("disabled", false);
 				$("#editEmail").attr("disabled", false);
@@ -796,17 +862,18 @@
 				$("#old-pwd").attr("disabled", false);
 				$("#new-pwd").attr("disabled", false);
 			});
-
+			
 			$(document).on('click', '#userDetailsUpdate', function() {
 				var _name = $('#editName').val();
 				var _email = $('#editEmail').val();
 				var _oldpwd = $('#old-pwd').val();
 				var _newpwd = $('#new-pwd').val();
 				//console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
-
-
+				
+				
 				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
 				var url = '/updateUserDetails';
+				updatedEmail = _email;
 				$.ajax({
 					type: "POST",
 					url: url,
@@ -819,14 +886,13 @@
 					}
 				});
 			});
-
+			
 			function updateConfirmation(data){
-				var message = data.message;
-				
+				var message = data.message;	
 				var updMsg = document.getElementById('updateMessage');
 				updMsg.innerHTML = message;
 				if(data.updated == true){
-					userEmail = _email; //Updated user email ID
+					userEmail = updatedEmail; //Updated user email ID
 					updMsg.style.color = "green";
 					updMsg.style.display = "block";
 					$("#userDetailsUpdate").attr("disabled", true);
@@ -852,8 +918,8 @@
 				$('#logoutInput').val(username);
 				$('#logoutForm').submit();		
 			});
-
+			
 		</script>
 	</body>
-
+	
 </html>

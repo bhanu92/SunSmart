@@ -28,6 +28,12 @@
 	background-size: contain;
 }
 
+#sunsmartapicard {
+	background-image: url("/images/up.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
 .btn-dashboard {
 	/* width: 250px; */
 	width: 100%;

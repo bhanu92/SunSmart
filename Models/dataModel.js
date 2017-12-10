@@ -2,29 +2,35 @@
 var db = require("../db");
 
 var deviceSchema = new db.Schema({
-  apikey: {
-    type: String
-  },
-  deviceId: {
-    type: String,
-    required: true
-  },
-  latitude: {
-    type: String,
-    required: true
-  },
-  longitude: {
-    type: String,
-    required: true
-  },
-  uv: {
-    type: String,
-    required: true
-  },
-  time: {
-    type: Date,
-    required: true
-  }
+	apikey: {
+		type: String
+	},
+	deviceId: {
+		type: String,
+		required: true
+	},
+	latitude: {
+		type: String,
+		required: true
+	},
+	longitude: {
+		type: String,
+		required: true
+	},
+	uv: {
+		type: String,
+		required: true
+	},
+	time: {
+		type: Date,
+		required: true
+	},
+	zip: {
+		type: String
+	},
+	city: {
+		type: String
+	}
 });
 
 var DataModel = db.model("deviceData", deviceSchema);

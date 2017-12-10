@@ -5,8 +5,10 @@ var path = require('path');
 var Device = require("../Models/devicesModel");
 var DataModel = require("../Models/dataModel");
 var UserModel = require("../Models/usersModel");
+var PublicUserModel = require("../Models/publicUserModel");
 var pass = require('../pass');
 var fs = require('fs');
+var deviceAPIKey = null;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -23,9 +25,7 @@ router.post('/register', function(req, res, next) {
 		});
 	}
 	else {
-		Device.findOne({
-			deviceId: req.body.deviceId
-			}, function(err, device) {
+		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (err) throw err;
 			if (!device) {
 				var newdevice = new Device({
@@ -56,9 +56,7 @@ router.post('/register', function(req, res, next) {
 				});
 			}
 			else {
-				res.status(400).send({
-					error: 'Device with the same Id already exist'
-				});
+				res.status(400).send({ error: 'Device with the same Id already exist' });
 			}
 		})
 	}
@@ -175,11 +173,7 @@ router.get('/deviceData/latest', function(req, res, next) {
 		});
 	}
 	else {
-		DataModel.find({
-			deviceId: deviceId
-			}).sort({
-			time: -1
-			}).exec(function(err, docs) {
+		DataModel.find({ deviceId: deviceId }).sort({ time: -1 }).exec(function(err, docs) {
 			if (err) throw err;
 			if (docs.length == 0) {
 				//console.log(docs);
@@ -281,11 +275,8 @@ router.post("/deviceData", function(req, res) {
 		message: {}
 	};
 	//console.log(JSON.stringify(req.body));
-	console.log('Latitude-'+ req.body.latitude);
+	console.log('Latitude-'+ req.body.latitude+ 'Longitude-'+ req.body.longitude);
 	var errorFlag = false;
-	console.log(req.body.time);
-	let date = new Date(Date.parse(req.body.time));
-	console.log(date);
 	
 	// Ensure the POST data include required properties
 	if (!req.body.hasOwnProperty("deviceId")) {
@@ -326,9 +317,7 @@ router.post("/deviceData", function(req, res) {
 	}
 	else {
 		// Find the device and verify the apikey
-		Device.findOne({
-			deviceId: req.body.deviceId
-			}, function(err, device) {
+		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (device !== null) {
 				if (device.apikey == req.body.apikey && req.body.deviceId != "320026000d51353432383931") { //TODO: Change the code here
 					responseJson.status = "ERROR";
@@ -337,28 +326,85 @@ router.post("/deviceData", function(req, res) {
 					res.status(201).send(responseJson);
 				}
 				else {
-					var dataModel = new DataModel({
-						deviceId: req.body.deviceId,
-						//apikey: req.body.apikey,
-						latitude: req.body.latitude,
-						longitude: req.body.longitude,
-						uv: req.body.uv,
-						//time: req.body.time
-						time: new Date(Date.parse(req.body.time))
-					});
 					
-					dataModel.save(function(err) {
-						if (err) {
-							console.log(err.message);
-							responseJson.status = "ERROR";
-							responseJson.message['error'] = err.message;
-							return res.status(201).send(responseJson);
+					var apikey = fs.readFileSync(__dirname + '/../apikeys/geocodeapikey.txt').toString();
+					apikey = apikey.replace(/(\r\n|\n|\r)/gm, "");
+					
+					var longitude = req.body.longitude;
+					var latitude = req.body.latitude;
+					
+					request({
+						method: "GET",
+						uri: "https://maps.googleapis.com/maps/api/geocode/json",
+						qs: {
+							latlng: parseFloat(latitude) + "," + parseFloat(longitude),
+							key: apikey
 						}
-						responseJson.status = "OK";
-						responseJson.message['success'] = "Device data has been saved!";
-						res.status(201).send(responseJson);
-						console.log("--------------------------------------------------Saved to DB-------------------------------------------------------------------");
-					});
+						}, function(error, response, body) {
+						if(error){
+							responseJson.status = "ERROR";
+							responseJson.message['error'] = "Error in request.";
+							return res.status(201).send(responseJson);
+							console.log(error)
+						}
+						var data = JSON.parse(body);
+						var zip_code = null;
+						var city = null;
+						if (data.status == "OK") {
+							// Parse the response to find the ZIP code and city
+							var zipFound = false, cityFound= false;
+							for(var i in data.results){	
+								if( zipFound &&  cityFound){
+									break;
+								}
+								for (var addrComp of data.results[i].address_components) {
+									if (addrComp.types[0] == "postal_code") {
+										zip_code = addrComp.short_name;
+										console.log(addrComp.short_name);
+										zipFound = true;
+									}
+									if(addrComp.types[0] == "locality") {
+										city = addrComp.long_name;
+										console.log(addrComp.long_name);
+										cityFound = true;
+									}
+									if( zipFound &&  cityFound){
+										break;
+									}
+								}						
+							}
+							
+							var dataModel = new DataModel({
+								deviceId: req.body.deviceId,
+								//apikey: req.body.apikey,
+								latitude: req.body.latitude,
+								longitude: req.body.longitude,
+								uv: req.body.uv,
+								city: city == null ? "Not Found" : city,
+								zip: zip_code == null ? "Not Found" : zip_code,
+								time: new Date(Date.parse(req.body.time))
+							});
+							
+							dataModel.save(function(err) {
+								if (err) {
+									console.log(err.message);
+									responseJson.status = "ERROR";
+									responseJson.message['error'] = err.message;
+									return res.status(201).send(responseJson);
+								}
+								responseJson.status = "OK";
+								responseJson.message['success'] = "Device data has been saved!";
+								res.status(201).send(responseJson);
+								console.log("-----------------Saved to DB-----------------");
+							});	
+						}
+						else{
+								responseJson.status = "ERROR";
+								responseJson.message['error'] = "Latitude or Longitude is incorrect.";
+								return res.status(201).send(responseJson);
+						}
+					});					
+					
 				}
 			}
 			else {
@@ -378,7 +424,7 @@ function getNewApikey() {
 	
 	for (var i = 0; i < 32; i++) {
 		newApikey += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-	}
+		}
 	
 	return newApikey;
 }
@@ -480,7 +526,7 @@ router.get("/getDeviceData", function(req, res, next) {
 			var end = new Date();
 			end.setHours(23, 59, 59, 999);		
 			var dataModelQuery = {
-					$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
+				$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
 			};		
 			DataModel.find(dataModelQuery, "time uv" ,function(err, dataModelData) {
 				if (err) {
@@ -495,6 +541,64 @@ router.get("/getDeviceData", function(req, res, next) {
 		}
 	});
 });
+
+
+router.get("/deviceData/zip", function(req, res,next) {
+    var zipCode = req.query.zipCode;
+    var apikey = req.query.key;
+    var responseJson = {
+		status: "",
+		maessage:"",
+        zip: zipCode,
+        averageUV: null,   
+	};
+	
+    if(zipCode == null || zipCode == undefined || zipCode == "") {
+        responseJson.status = "ERROR";
+        responseJson.message = "Request missing Zip code parameter.";
+        res.status(200).send(JSON.stringify(responseJson));
+	}
+    else if(apikey == undefined || apikey == null || apikey == "") {
+        responseJson.status = "ERROR";
+        responseJson.message = "Request missing apikey parameter.";
+        res.status(200).send(JSON.stringify(responseJson));
+	}
+    else {
+		DataModel.findOne({zipCode:req.query.zip},function(err,data){
+			
+			if(err) throw err;
+			if(data == null) {
+				responseJson.status="ERROR";
+				responseJson.message="The zip Code does not match our records";
+				res.status(400).send(JSON.stringify(responseJson));
+			}
+			else{
+				DataModel.aggregate([
+					{ $match : { "zipCode" : zipCode } },
+					{ $group : {
+						_id : null,
+						average : { $avg : "$uv" }
+					}
+					}], function(err, total) { 
+					if (err) {
+						responseJson.status = "ERROR";
+						res.status(200).send(JSON.stringify(responseJson));
+					}
+					else {
+						// Check if documents matched and we have a average
+						if (average.length > 0) {
+							responseJson.averageUV = average[0].average;		    
+						}
+						responseJson.status = "OK";
+						res.status(200).send(JSON.stringify(responseJson));
+					}
+				});
+			}
+		});
+	}
+	
+});
+
 
 
 
