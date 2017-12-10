@@ -234,7 +234,7 @@
 		  </div>
 		</div>
 		<div style="display: none">
-			<form id="validateToken" action="/users/logout" method="post">
+			<form id="validateToken" action="/users/status" method="post">
 				<input name="authToken" type="password" id="validateTokenInput">
 			</form>
 		</div>
@@ -246,8 +246,7 @@
 		
 		if(authTokenValid == 'invalid'){
 			window.localStorage.removeItem('authToken');
-		}
-		
+		}		
 		
 		if(msg != ''){
 			console.log('Invalid User');
