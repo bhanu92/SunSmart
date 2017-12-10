@@ -588,7 +588,7 @@ router.get('/existingpublickey', function(req, res, next) {
 		PublicUserModel.findOne({ email: email }, function(err, userDetails) {
 			if (err){
 				//throw err;
-				console.log(error);
+				console.log(err);
 			}
 			if (!userDetails) {
 				res.status(201).send({ error: 'No APIKEY Found.' });
