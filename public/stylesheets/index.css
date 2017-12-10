@@ -22,6 +22,12 @@
 	background-size: contain;
 }
 
+#forecastcard {
+	background-image: url("/images/uv.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
 .btn-dashboard {
 	/* width: 250px; */
 	width: 100%;

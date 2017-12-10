@@ -61,6 +61,12 @@
 								<p>User Profile</p>
 							</a>
 						</li>
+						<li id="weatherforcast" class="da6" onclick="changeView(this)">
+							<a href="javascript:void(0)">
+								<i class="ti-user"></i>
+								<p>Weather Forcast</p>
+							</a>
+						</li>						
 					</ul>
 				</div>
 			</div>
@@ -188,6 +194,29 @@
 										</div>
 									</div>
 								</div>
+								<div class="col-lg-4 col-sm-4">
+									<div class="card">
+										<div class="content">
+											<div class="row">
+												<div class="col-xs-5">
+													<div class="icon-big icon-info text-center" id="forecastcard">
+													</div>
+												</div>
+												<div class="col-xs-7">
+													<div class="numbers">
+														<p>WEATHER FORECAST</p>
+													</div>
+												</div>
+											</div>
+											<div class="footer">
+												<hr />
+												<div class="stats">
+													<button class="btn btn-dashboard" onclick="change(5)">Get Forecast</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 
@@ -254,7 +283,7 @@
 							</div>
 						</div>
 
-						<div id="userprofile-content" style="display:none">
+						<div id="userprofile-content" style="display:none">						
 							<div class="row">
 								<div class="col-lg-6 col-sm-6">
 									<div class="card">
@@ -268,6 +297,28 @@
 							</div>
 						</div>
 
+						<div id="weatherforcast-content" style="display:none">						
+							<div class="row">
+								<div class="col-lg-5 col-sm-5">
+									<div class="card">
+										<div class="header">
+											<div class="form-group">
+												<Label for="zip_code">ZIP Code</Label>
+												<input id="zip_code" type="text" class="form-control" pattern="[0-9]{5}" placeholder="Enter the 5 digit zip code"/> 
+											</div>
+											<br>
+											<button type="button" class="btn btn-default" id="forecastBtn" >Get Weather Forecast!</button>
+										</div>
+										<div class="content">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="row" id="forecastDataCards">								
+							</div>							
+						</div>
+						
 					</div>
 				</div>
 
@@ -335,7 +386,6 @@
 			var devicesList= [];
 			$(document).ready(function () {
 				if(authToken != ''){
-					console.log('authToken-' + authToken );
 					window.localStorage.setItem("authToken", authToken);
 				}
 				else{
@@ -346,7 +396,6 @@
 				if(devicesList.length > 0){
 					latestDevicedata();
 				}
-				console.log(devicesList);
 			});
 
 			function change(x) {
@@ -364,6 +413,10 @@
 				}
 				else if(x==4) {
 					var element = document.getElementById("userprofile");
+					changeView(element);
+				}
+				else if(x==5) {
+					var element = document.getElementById("weatherforcast");
 					changeView(element);
 				}
 			}
@@ -401,6 +454,7 @@
                     $('#userprofile-content').hide();
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#dashboard-content').show();
 					document.getElementById("navhead").innerHTML = "DASHBOARD";
                     break;
@@ -409,6 +463,7 @@
                     $('#userprofile-content').hide();
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#devices-content').show();
 					document.getElementById("navhead").innerHTML = "DEVICES";
                     break;
@@ -417,6 +472,7 @@
                     $('#dashboard-content').hide();
                     $('#uvindex-content').hide();
                     $('#userprofile-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#healthtips-content').show();
 					document.getElementById("navhead").innerHTML = "HEALTH TIPS";
                     break;
@@ -425,6 +481,7 @@
                     $('#dashboard-content').hide();
                     $('#healthtips-content').hide();
                     $('#userprofile-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#uvindex-content').show();
 					document.getElementById("navhead").innerHTML = "UV INDEX";
                     break;
@@ -434,14 +491,25 @@
                     $('#dashboard-content').hide();
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#userprofile-content').show();
 					document.getElementById("navhead").innerHTML = "USER PROFILE";
+                    break;
+					case 'weatherforcast':
+                    $('#devices-content').hide();
+                    $('#dashboard-content').hide();
+                    $('#uvindex-content').hide();
+                    $('#healthtips-content').hide();
+                    $('#userprofile-content').hide();
+					$('#weatherforcast-content').show();
+					document.getElementById("navhead").innerHTML = "WEATHER FORECAST";
                     break;
 					default:
                     $('#devices-content').hide();
                     $('#userprofile-content').hide();
                     $('#uvindex-content').hide();
                     $('#healthtips-content').hide();
+					$('#weatherforcast-content').hide();
                     $('#dashboard-content').show();
 					document.getElementById("navhead").innerHTML = "DASHBOARD";
 				}
@@ -451,6 +519,40 @@
 				$('#registerdevice-error').html('');
 				$("#deviceid").val('');
 			});
+			
+			$("#forecastBtn").click(function() {
+				var zip_code = $("#zip_code").val();
+				var url = "/forecast?postal_code=";
+				var querystring = encodeURIComponent(zip_code);
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					responseType: "json",
+					success: forecast,
+					error: function (jqXHR, status, error) {
+							console.log(jqXHR.responseJSON);
+					}
+				});
+			});
+			
+			function forecast(data, status, xhr) {
+				var finaldata= data["uv"];
+				var htmlData='';
+				for(var i in finaldata) {
+					htmlData+='<div class="col-lg-5 col-sm-5">';
+					htmlData+='<div class="card">';
+					htmlData+='<ul>';
+					htmlData+='<li> UV: '+ finaldata[i].uv +'</li>';
+					htmlData+='<li> Max Temperature: '+ finaldata[i].max_temp+'</li>';
+					htmlData+='<li> Min Temperature: '+ finaldata[i].min_temp+'</li>';
+					htmlData+='<li> Precipitation: '+ finaldata[i].precip+'</li>';
+					htmlData+='<li> Date :'+ finaldata[i].date+'</li>';
+					htmlData+='</ul>';
+					htmlData+='</div>';
+					htmlData+='</div>';
+				}
+				$('#forecastDataCards').html(htmlData);
+			}			
 
 			$('#register-submit').on('click', function () {
 				var url = '/register';
@@ -513,11 +615,10 @@
 					success: function(msg){
 								var index = devicesList.indexOf(devId);
 								if (index > -1) {
-									array.splice(index, 1);
+									devicesList.splice(index, 1);
 								}
-								console.log(devicesList);
 								$("#"+devId).remove();
-								console.log("Device "+ devId + " is now deleted");
+								//console.log("Device "+ devId + " is now deleted");
 					},
 					error: function (jqXHR) {
 						var error = jqXHR.responseJSON.error;
@@ -682,7 +783,7 @@
 				var _email = $('#editEmail').val();
 				var _oldpwd = $('#old-pwd').val();
 				var _newpwd = $('#new-pwd').val();
-				console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
+				//console.log("name: " + _name + ", email: " + _email + ", old email: " + userEmail);
 
 
 				var updatedData = {name : _name, new_email : _email, old_pwd : _oldpwd, new_pwd : _newpwd, old_email : userEmail};
@@ -703,13 +804,10 @@
 
 			function updateConfirmation(data){
 				var message = data.message;
-				console.log(message);
 				
 				var updMsg = document.getElementById('updateMessage');
 				updMsg.innerHTML = message;
-				console.log($('#updateMessage'));
 				if(data.updated == true){
-					console.log("green");
 					updMsg.style.color = "green";
 					updMsg.style.display = "block";
 					$("#userDetailsUpdate").attr("disabled", true);
@@ -719,7 +817,6 @@
 					$("#new-pwd").attr("disabled", true);
 				}
 				else{
-					console.log("red");
 					updMsg.style.color = "red";
 					updMsg.style.display = "block";
 					$("#userDetailsUpdate").attr("disabled", false);

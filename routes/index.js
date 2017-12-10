@@ -6,6 +6,7 @@ var Device = require("../Models/devicesModel");
 var DataModel = require("../Models/dataModel");
 var UserModel = require("../Models/usersModel");
 var pass = require('../pass');
+var fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -335,5 +336,76 @@ function getNewApikey() {
 router.get("/.well-known/acme-challenge/Ll3mCA5lCX5OGZr3UH0yE5nVjOhxbZp0lcb3LgQwKso", function(req, res) {
 	res.sendFile(path.join(__dirname, '../.well-known/acme-challenge/Ll3mCA5lCX5OGZr3UH0yE5nVjOhxbZp0lcb3LgQwKso'));
 });
+
+router.get('/forecast', function(req, res, next) {
+	var responseJson = {
+		uv : "Invalid",
+		status: "ERROR"
+	};
+	var zip_code = null;
+	//Import APIKEY
+	var apikey = fs.readFileSync(__dirname + "/../apikeys/weatherbit.txt").toString(); // add directory
+	apikey = apikey.replace(/(\r\n|\n|\r)/gm,"");
+	
+	if (req.query.hasOwnProperty("postal_code")) {
+		zip_code = req.query.postal_code;
+		if (isNaN(parseInt(zip_code))) {
+			// Invalid ZIP code
+			return res.status(401).send(responseJson);
+		}
+	}
+	else {
+		// Invalid query string
+		responseJson = {error: "ZIP code missing"};
+		return res.status(401).send(responseJson);
+	}
+	
+	// Request to the third-party server
+	request({
+		method: "GET",
+		uri: "https://api.weatherbit.io/v2.0/forecast/daily",
+		qs: {
+			postal_code: zip_code,
+			key : apikey
+		}
+	}, 
+	function(error, response, body) {
+		if (error || (response && response.statusCode != 200)) {
+			return res.status(401).send(responseJson);
+		}
+		else {
+			if (body) {
+				var data = JSON.parse(body);
+				// Error handling for response
+				if (data.hasOwnProperty("error")){
+					return res.status(401).send(data);
+				}
+				else {
+					responseJson.uv = forecast(data.data);
+					responseJson.status = "Success";
+					res.status(200).send(responseJson);
+				}
+			}
+			else {
+				return res.status(401).send(responseJson);
+			}
+		}
+	});
+});
+
+function forecast(data) {
+    var weather = [];
+    for (var i = 0; i < 5; i++) {
+		var day = {};
+		day["uv"] = data[i].uv;
+		day["max_temp"] = data[i].max_temp;
+		day["min_temp"] = data[i].min_temp;
+		day["precip"] = data[i].precip;
+		day["date"] = data[i].datetime;
+		weather.push(day);
+	}
+	return weather;
+}
+
 
 module.exports = router;									
