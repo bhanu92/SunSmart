@@ -23,11 +23,13 @@ var smtpTransport = nodemailer.createTransport({
 /* Login */
 router.post('/signin', function(req, res, next) {
 	
-	if (req.body.email == '' || req.body.password == '' || req.body.username == '') {
+	if (req.body.email == '' || req.body.password == '' || req.body.username == '') 
+	{
 		req.session.error = 'Please fill the required fields (name, email and password).';
 		req.session.loginMode = 'signup';
 		res.redirect('/');
-		} else {
+	} 
+	else {
 		User.findOne({
 			email: req.body.email
 			}, function(err, user) {

@@ -16,15 +16,11 @@ router.get('/', function(req, res, next) {
 router.post('/register', function(req, res, next) {
 	var apikey = getNewApikey();
 	
-	if (req.body.deviceId == '') {
-		res.status(400).send({
-			error: 'Device Id cannot be empty.'
-		});
+	if (req.body.deviceId == '' || req.body.email == ''|| !req.body.email || !req.body.deviceId) {
+		res.status(400).send({error: 'DeviceId and EmailId cannot be empty.'});
 	}
 	else {
-		Device.findOne({
-			deviceId: req.body.deviceId
-			}, function(err, device) {
+		Device.findOne({ deviceId: req.body.deviceId}, function(err, device) {
 			if (err) throw err;
 			if (!device) {
 				var newdevice = new Device({
@@ -40,16 +36,14 @@ router.post('/register', function(req, res, next) {
 							error: 'Something went wrong. Please try again.'
 						});
 					}
-					res.status(201).send({
-						deviceId: req.body.deviceId,
-						apikey: apikey
-					});
+					Device.find({ userEmail: req.body.email }, "deviceId", function(err, devices) {
+						if (err){ console.log( err.message) };
+						res.status(201).send({ deviceId: req.body.deviceId, apikey: apikey, devices: devices });
+					});				
 				});
 			}
 			else {
-				res.status(400).send({
-					error: 'Device with the same Id already exist'
-				});
+				res.status(400).send({ error: 'Device with the same Id already exist' });
 			}
 		})
 	}
@@ -65,21 +59,15 @@ router.get('/devices', function(req, res, next) {
 		});
 	}
 	else {
-		Device.find({
-			userEmail: email
-			}, function(err, devices) {
+		Device.find({ userEmail: email }, "apikey deviceId", function(err, devices) {
 			if (err) throw err;
 			if (devices.length == 0) {
-				res.status(200).send({
-					error: 'No devices Found.'
-				});
+				res.status(200).send({ error: 'No devices Found.' });
 			}
 			else {
-				res.status(200).send({
-					devices: devices
-				});
+				res.status(200).send({ devices: devices });
 			}
-		})
+		});
 	}
 	
 });
@@ -130,14 +118,10 @@ router.get('/deviceData', function(req, res, next) {
 			}, function(err, data) {
 			if (err) throw err;
 			if (data.length == 0) {
-				res.status(200).send({
-					error: 'No device data Found or Device is not Registered'
-				});
+				res.status(200).send({ error: 'No device data Found or Device is not Registered' });
 			}
 			else {
-				res.status(200).send({
-					data: data
-				});
+				res.status(200).send({ data: data });
 			}
 		})
 	}
@@ -160,10 +144,8 @@ router.get('/deviceData/latest', function(req, res, next) {
 			}).exec(function(err, docs) {
 			if (err) throw err;
 			if (docs.length == 0) {
-				console.log(docs);
-				res.status(200).send({
-					error: 'No device data Found or Device is not Registered'
-				});
+				//console.log(docs);
+				res.status(200).send({ error: 'No device data Found or Device is not Registered'});
 			}
 			else {
 				res.status(200).send({
@@ -195,7 +177,7 @@ router.get("/userDetails", function(req, res, next) {
 				});
 			}
 			else {
-				console.log("%s, %s", data.username, data.email);
+				//console.log("%s, %s", data.username, data.email);
 				res.status(200).send({
 					name: data.username,
 					email: data.email
@@ -259,7 +241,7 @@ router.post("/deviceData", function(req, res) {
 		message: {}
 	};
 	//console.log(JSON.stringify(req.body));
-	console.log(req.body.latitude);
+	console.log('Latitude-'+ req.body.latitude);
 	var errorFlag = false;
 	
 	// Ensure the POST data include required properties
@@ -298,9 +280,7 @@ router.post("/deviceData", function(req, res) {
 	}
 	else {
 		// Find the device and verify the apikey
-		Device.findOne({
-			deviceId: req.body.deviceId
-			}, function(err, device) {
+		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (device !== null) {
 				if (device.apikey == req.body.apikey) { //TODO: Change the code here
 					responseJson.status = "ERROR";
@@ -331,7 +311,7 @@ router.post("/deviceData", function(req, res) {
 				}
 			}
 			else {
-				console.log("Device ID " + req.body.deviceId + " not registered.");
+				//console.log("Device ID " + req.body.deviceId + " not registered.");
 				responseJson.status = "ERROR";
 				responseJson.message['deviceId'] = "Device ID " + req.body.deviceId + " not registered.";
 				res.status(201).send(responseJson);

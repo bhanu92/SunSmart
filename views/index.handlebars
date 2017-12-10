@@ -332,6 +332,7 @@
 			var deviceId = '';
 			var authToken='{{{authToken}}}';
 			var username= '{{{username}}}';
+			var devicesList= [];
 			$(document).ready(function () {
 				if(authToken != ''){
 					console.log('authToken-' + authToken );
@@ -342,9 +343,10 @@
 				}
 				loadContent();
 				getDevices();
-				if(deviceId != ''){
+				if(devicesList.length > 0){
 					latestDevicedata();
 				}
+				console.log(devicesList);
 			});
 
 			function change(x) {
@@ -473,6 +475,8 @@
 			});
 
 			function AppendRegisteredDevice(msg) {
+				//Update devices list
+				devicesList.push(msg.deviceId);
 				deviceId=msg.deviceId; //TODO: Need to modify this.
 				$('#registerModal').modal('hide');
 				$('#Nodevice').hide();
@@ -490,8 +494,7 @@
 				htmldata += '<button class="btn" id="' + msg.deviceId + '!#!btn" onclick="DeleteDevice(this)">Delete Device</button>';
 				htmldata += '</div></div></div></div>';
 				$('#registeredDevices-content').append(htmldata);
-				latestDevicedata();
-				//deviceData-content
+				
 			}
 			
 			function DeleteDevice(element){
@@ -507,7 +510,12 @@
 					url: url,
 					dataType: "json",
 					data: data,
-					success: function(msg){		
+					success: function(msg){
+								var index = devicesList.indexOf(devId);
+								if (index > -1) {
+									array.splice(index, 1);
+								}
+								console.log(devicesList);
 								$("#"+devId).remove();
 								console.log("Device "+ devId + " is now deleted");
 					},
@@ -537,13 +545,15 @@
 			function loadRegistedredDevices(msg) {
 				if (msg.devices) {
 					$('#Nodevice').hide();
-					var count = 0
+					devicesList=[];
 					for (var i in msg.devices) {
-						count++;
 						AppendRegisteredDevice(msg.devices[i]);
-					}
-					if(count == 0){
+					}					
+					//console.log(devicesList);
+					if(devicesList.length == 0){
 						$('#Nodevice').show();
+					}else{
+						//Start loading UV data from devices					
 					}
 				}
 				else {
@@ -552,19 +562,20 @@
 			}
 
 			function latestDevicedata(){
-				var url = '/deviceData/latest?deviceId=';
-				var querystring = encodeURIComponent(deviceId);
-				$.ajax({
-					type: "GET",
-					url: url + querystring,
-					dataType: "json",
-					success: loadUVData,
-					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
-						console.log(error);
-					}
-				})
-
+				for(var i in devices){
+					var url = '/deviceData/latest?deviceId=';
+					var querystring = encodeURIComponent(devices[0]);
+					$.ajax({
+						type: "GET",
+						url: url + querystring,
+						dataType: "json",
+						success: loadUVData,
+						error: function (jqXHR) {
+							var error = jqXHR.responseJSON.error;
+							console.log(error);
+						}
+					})			
+				}
 			}
 
 			function loadUVData(msg){
