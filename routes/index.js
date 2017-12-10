@@ -517,24 +517,28 @@ router.get("/getDeviceData", function(req, res, next) {
 			return res.status(201).send({"error": err.message});
 		}
 		else {
-			var _deviceID = deviceModelData[0].deviceId;
-			var start = new Date();
-			start.setHours(0, 0, 0, 0);
-			var end = new Date();
-			end.setHours(23, 59, 59, 999);		
-			var dataModelQuery = {
-				$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
-			};		
-			DataModel.find(dataModelQuery, "time uv" ,function(err, dataModelData) {
-				if (err) {
-					console.log(err.message);
-					return res.status(201).send({"error" : err.message});
-				}
-				else {
-					console.log(dataModelData);
-					return res.status(201).send(dataModelData);
-				}
-			});
+			if( deviceModelData.length != 0){
+				var _deviceID = deviceModelData[0].deviceId;
+				var start = new Date();
+				start.setHours(0, 0, 0, 0);
+				var end = new Date();
+				end.setHours(23, 59, 59, 999);		
+				var dataModelQuery = {
+					$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
+				};		
+				DataModel.find(dataModelQuery, "time uv" ,function(err, dataModelData) {
+					if (err) {
+						console.log(err.message);
+						return res.status(201).send({"error" : err.message});
+					}
+					else {
+						return res.status(201).send(dataModelData);
+					}
+				});
+			}
+			else{
+				return res.status(201).send({"error" : "No device found"});
+			}
 		}
 	});
 });
@@ -542,38 +546,38 @@ router.get("/getDeviceData", function(req, res, next) {
 /* Register a Device */
 router.post('/getPublicAPI', function(req, res, next) {
 	var apikey = getNewApikey();
-	
-	if (req.body.email == '' || !req.body.email) {
-		res.status(400).send({ error: 'Email cannot be empty.' });
-	}
-	else {
-		PublicUserModel.findOne({ email: req.body.email }, function(err, user) {
-			if (err) throw err;
-			if (!user) {
-				var publicUser = new PublicUserModel({
-					apikey: apikey,
-					email: req.body.email
-				});
-				
-				publicUser.save(function(err) {
+
+if (req.body.email == '' || !req.body.email) {
+	res.status(400).send({ error: 'Email cannot be empty.' });
+}
+else {
+	PublicUserModel.findOne({ email: req.body.email }, function(err, user) {
+		if (err) throw err;
+		if (!user) {
+			var publicUser = new PublicUserModel({
+				apikey: apikey,
+				email: req.body.email
+			});
+			
+			publicUser.save(function(err) {
+				if (err) {
+					console.log(err.message);
+					return res.status(400).send({ error: 'Something went wrong. Please try again.' });
+				}
+				PublicUserModel.find({ email: req.body.email}, function(err, userDetails) {
 					if (err) {
-						console.log(err.message);
-						return res.status(400).send({ error: 'Something went wrong. Please try again.' });
-					}
-					PublicUserModel.find({ email: req.body.email}, function(err, userDetails) {
-						if (err) {
-							console.log(err.message)
-						};
-						//console.log(userDetails[0].apikey)
-						res.status(201).send({ email: req.body.email, apikey: userDetails[0].apikey });
-					});
+						console.log(err.message)
+					};
+					//console.log(userDetails[0].apikey)
+					res.status(201).send({ email: req.body.email, apikey: userDetails[0].apikey });
 				});
-			}
-			else {
-				res.status(400).send({ error: 'Email with the same Id already exist' });
-			}
-		})
-	}
+			});
+		}
+		else {
+			res.status(400).send({ error: 'Email with the same Id already exist' });
+		}
+	})
+}
 });
 
 

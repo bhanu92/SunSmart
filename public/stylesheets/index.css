@@ -42,4 +42,10 @@
 
 .shadow{
 	box-shadow:20px 20px 50px 15px lightgrey;
+}	
+
+.table-wrapper {
+	max-width: 600px;
+	max-height: 600px;
+	overflow-y: scroll;
 }
