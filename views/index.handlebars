@@ -788,7 +788,7 @@
 						//console.log("Device "+ devId + " is now deleted");
 					},
 					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
+						var error = jqXHR.responseJSON;
 						console.log(error);
 					}
 				});
@@ -804,16 +804,18 @@
 					dataType: "json",
 					success: loadRegistedredAPIKEY,
 					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
+						var error = jqXHR.responseJSON;
 						console.log(error);
 					}
 				})												
 			}
 			
 			function loadRegistedredAPIKEY(data){
-				$('#publickeyInput').val(data.apikey);
-				$('#publicAPIBtn').remove();
-				$('#publickeyHeading').html('Below is your API key!');		
+				if(data.apikey){
+					$('#publickeyInput').val(data.apikey);
+					$('#publicAPIBtn').remove();
+					$('#publickeyHeading').html('Below is your API key!');		
+				}
 			}
 			
 			

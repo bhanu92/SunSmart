@@ -585,7 +585,7 @@ router.get('/existingpublickey', function(req, res, next) {
 		res.status(401).send({ error: 'Email cannot be empty.' });
 	}
 	else {
-		PublicUserModel.find({ email: email }, function(err, userDetails) {
+		PublicUserModel.findOne({ email: email }, function(err, userDetails) {
 			if (err){
 				//throw err;
 				console.log(error);
@@ -594,7 +594,7 @@ router.get('/existingpublickey', function(req, res, next) {
 				res.status(201).send({ error: 'No APIKEY Found.' });
 			}
 			else {
-				res.status(200).send({ apikey: userDetails[0].apikey });
+				res.status(200).send({ apikey: userDetails.apikey });
 			}
 		});
 	}	
