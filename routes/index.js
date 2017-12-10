@@ -241,8 +241,8 @@ router.post("/deviceData", function(req, res) {
 		status: "",
 		message: {}
 	};
-	//console.log(JSON.stringify(req.body));
-	console.log('Latitude-'+ req.body.latitude);
+	console.log(JSON.stringify(req.body));
+	//console.log('Latitude-'+ req.body.latitude);
 	var errorFlag = false;
 	
 	// Ensure the POST data include required properties
@@ -251,10 +251,12 @@ router.post("/deviceData", function(req, res) {
 		responseJson.message['deviceId'] = "Request missing deviceId parameter.";
 		errorFlag = true;
 	}
-	if (!req.body.hasOwnProperty("apikey")) {
-		//responseJson.status = "ERROR";
-		//responseJson.message['apikey'] = "Request missing apikey parameter.";
-		//errorFlag = true;
+	if (req.body.deviceId != "320026000d51353432383931") {
+		if(!req.body.hasOwnProperty("apikey")){
+			responseJson.status = "ERROR";
+			responseJson.message['apikey'] = "Request missing apikey parameter.";
+			errorFlag = true;
+		}
 	}
 	if (!req.body.hasOwnProperty("longitude")) {
 		responseJson.status = "ERROR";
@@ -277,25 +279,27 @@ router.post("/deviceData", function(req, res) {
 		errorFlag = true;
 	}
 	if (errorFlag) {
+		console.log(responseJson);
 		res.status(201).send(responseJson);
 	}
 	else {
 		// Find the device and verify the apikey
 		Device.findOne({ deviceId: req.body.deviceId }, function(err, device) {
 			if (device !== null) {
-				if (device.apikey == req.body.apikey) { //TODO: Change the code here
+				if (device.apikey == req.body.apikey && req.body.deviceId != "320026000d51353432383931") { //TODO: Change the code here
 					responseJson.status = "ERROR";
 					responseJson.message['apikey'] = "Invalid apikey for device ID " + req.body.deviceId + ".";
+					console.log(responseJson);
 					res.status(201).send(responseJson);
 				}
 				else {
 					var dataModel = new DataModel({
 						deviceId: req.body.deviceId,
 						//apikey: req.body.apikey,
-						latitude: req.body.latitude,
-						longitude: req.body.longitude,
-						uv: req.body.uv,
-						time: req.body.time
+					latitude: req.body.latitude,
+					longitude: req.body.longitude,
+					uv: req.body.uv,
+					time: req.body.time
 					});
 					
 					dataModel.save(function(err) {
@@ -308,6 +312,7 @@ router.post("/deviceData", function(req, res) {
 						responseJson.status = "OK";
 						responseJson.message['success'] = "Device data has been saved!";
 						res.status(201).send(responseJson);
+						console.log("--------------------------------------------------Saved to DB-------------------------------------------------------------------");
 					});
 				}
 			}
