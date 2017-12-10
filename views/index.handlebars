@@ -349,16 +349,94 @@
 						</div>
 						
 						<div id="publicapi-content" style="display:none">						
-							<div class="row">
-								<div class="col-lg-6 col-sm-6">
-									<div class="card">
-										<div class="header">
-											SunSmart Public API Details
-										</div>
-										<div class="content">
+							<div class="container">
+								<div>
+									<h2> Dont have your own device?</h2>
+								</div>
+								<div>
+									<p>With our public API, now you dont have to carry your own device. Our public API allows users to get an average UV index of a particular location if it has been recorded by users with a device.</p>
+									<p>SunSmart allows public users to get the average UV index of a particular loaction using two ways:</p>
+								</div>
+								<div class= "row">
+									<div class="col-lg-6 col-sm-6">
+										<div class="card">
+											<div class="header" id="publickeyHeading" style="font-weight: bold; font-family: Helvetica, Arial, sans-serif">
+												<p><strong>Click below to get your API key!</strong></p>
+											</div>
+												<div class="content">
+												<div class="form-group">
+													<Label for="publickeyInput">API Key</Label>
+													<input id="publickeyInput" type="text" class="form-control" disabled="disabled"/> 
+												</div>												
+												<button class="btn" id="publicAPIBtn">Get APIKEY</button>
+											</div>
 										</div>
 									</div>
 								</div>
+								<div>
+									<h2>Request parameters</h2>
+									
+									<p>apikey=[key] (REQUIRED)</p>
+									<ul>
+										<li>
+											key - Your API Key.
+										</li>
+									</ul>
+									
+									<p>zipCode=[String] (returns the average UV index of a specific zip Code)</p>
+									<ul>
+										<li>
+											zipCode - The ZIP code for which you want the average UV index.
+										</li>
+									</ul>
+									<p>city=[String] (returns the average UV index of a specific city name)</p>
+									<ul>
+										<li>
+											city - The city for which you want the average UV index.
+										</li>
+									</ul>
+								</div>
+								<div>
+									<h2>API Endpoints</h2>
+									
+									<table class="table table-bordered table-striped">
+										<thead>
+											<tr>
+												<th>Description</th>
+												<th>Required parameters</th>
+												<th>Examples</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>Get average UV index by ZIP code</td>
+												<td>zipCode</td>
+												<td>zipCode=85719</td>
+											</tr>
+											<tr>
+												<td>Get average UV index by City</td>
+												<td>city</td>
+												<td>city=Tucson</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div>
+									<h2>Example Request</h2>
+									<div class="shadow">
+										<p>https://sunsmart513.duckdns.org/deviceData?zipCode=85719&apikey={API_KEY}</p>
+									</div>
+									
+									<div class="shadow">
+										<p>https://sunsmart513.duckdns.org/deviceData?city=Tucson&apikey={API_KEY}</p>
+									</div>
+									
+									<div class="shadow">
+										<p>https://sunsmart513.duckdns.org/deviceData?city=Tucson&apikey=abcndgfasACs56sda</p>
+									</div>
+								</div>
+								<hr>
+								
 							</div>
 						</div>
 						
@@ -441,6 +519,7 @@
 				if(devicesList.length > 0){
 					//latestDevicedata();
 				}
+				getExisitngAPIKEY();
 			});
 			
 			function change(x) {
@@ -601,6 +680,28 @@
 				});
 			});
 			
+			$("#publicAPIBtn").click(function(){
+				var email = userEmail;
+				var url = "/getPublicAPI";
+				$.ajax({
+					type: "POST",
+					url: url,
+					data: {email : email}, 
+					responseType: "json",
+					success: renderPublicKey,
+					error: function (jqXHR, status, error) {
+						console.log(jqXHR.responseJSON);
+					}
+				});			
+			});
+			
+			function renderPublicKey(data){	
+				$('#publickeyInput').val(data.apikey);
+				$('#publicAPIBtn').remove();
+				$('#publickeyHeading').html('Below is your API key!');			
+			}		
+			
+			
 			function forecast(data, status, xhr) {
 				var finaldata= data["uv"];
 				var htmlData='';
@@ -691,6 +792,28 @@
 						console.log(error);
 					}
 				});
+			}
+			
+			
+			function getExisitngAPIKEY(){				
+				var url = '/existingpublickey?email=';
+				var querystring = encodeURIComponent(userEmail);
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					dataType: "json",
+					success: loadRegistedredAPIKEY,
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				})												
+			}
+			
+			function loadRegistedredAPIKEY(data){
+				$('#publickeyInput').val(data.apikey);
+				$('#publicAPIBtn').remove();
+				$('#publickeyHeading').html('Below is your API key!');		
 			}
 			
 			
