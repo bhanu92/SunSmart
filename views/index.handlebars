@@ -394,7 +394,7 @@
 				loadContent();
 				getDevices();
 				if(devicesList.length > 0){
-					latestDevicedata();
+					//latestDevicedata();
 				}
 			});
 
@@ -661,25 +661,44 @@
 					$('#Nodevice').show();
 				}
 			}
-
-			function latestDevicedata(){
-				for(var i in devices){
-					var url = '/deviceData/latest?deviceId=';
-					var querystring = encodeURIComponent(devices[0]);
-					$.ajax({
-						type: "GET",
-						url: url + querystring,
-						dataType: "json",
-						success: loadUVData,
-						error: function (jqXHR) {
-							var error = jqXHR.responseJSON.error;
-							console.log(error);
-						}
-					})			
-				}
+			
+			
+			function latestDevicedata(){				
+				var url = '/getDeviceData?email=';
+				var querystring = encodeURIComponent(userEmail);
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					dataType: "json",
+					success: loadUVData,
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				});
+			}
+			
+			function loadUVData(msg){
+				console.log(msg);			
 			}
 
-			function loadUVData(msg){
+			function latestDevicedata123(){	//TODO Use this later			
+				var url = '/deviceData/latest?deviceId=';
+				var querystring = encodeURIComponent(devicesList[0]);
+				$.ajax({
+					type: "GET",
+					url: url + querystring,
+					dataType: "json",
+					success: loadUVData123,
+					error: function (jqXHR) {
+						var error = jqXHR.responseJSON.error;
+						console.log(error);
+					}
+				});
+			}
+		
+			
+			function loadUVData123(msg){
 				//console.log(msg.data)
 				if (msg.data) {
 					$('#NodeviceData').hide();
@@ -799,7 +818,6 @@
 						console.log("ERROR: " + error);
 					}
 				});
-				userEmail = _email;
 			});
 
 			function updateConfirmation(data){
@@ -808,6 +826,7 @@
 				var updMsg = document.getElementById('updateMessage');
 				updMsg.innerHTML = message;
 				if(data.updated == true){
+					userEmail = _email; //Updated user email ID
 					updMsg.style.color = "green";
 					updMsg.style.display = "block";
 					$("#userDetailsUpdate").attr("disabled", true);
