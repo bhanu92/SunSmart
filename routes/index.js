@@ -115,7 +115,7 @@ router.post('/deleteDevice', function(req, res, next) {
 					deviceId: deviceId
 					}, function(err, result) {
 					if (err) {
-						res.status(40).send({
+						res.status(401).send({
 							error: 'No devices Found.'
 						});
 					}
@@ -536,8 +536,9 @@ router.get("/getDeviceData", function(req, res, next) {
 					for(var i in dataModelData){
 						avg+=parseInt(dataModelData[i].uv);
 					}
+					var agg=avg;
 					var averageUV = parseInt(avg/dataModelData.length);
-						return res.status(201).send({ data: dataModelData, averageUV: averageUV});
+						return res.status(201).send({ data: dataModelData, averageUV: averageUV, aggregateUV: agg});
 					}
 				});
 			}
