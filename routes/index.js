@@ -546,38 +546,38 @@ router.get("/getDeviceData", function(req, res, next) {
 /* Register a Device */
 router.post('/getPublicAPI', function(req, res, next) {
 	var apikey = getNewApikey();
-
-if (req.body.email == '' || !req.body.email) {
-	res.status(400).send({ error: 'Email cannot be empty.' });
-}
-else {
-	PublicUserModel.findOne({ email: req.body.email }, function(err, user) {
-		if (err) throw err;
-		if (!user) {
-			var publicUser = new PublicUserModel({
-				apikey: apikey,
-				email: req.body.email
-			});
-			
-			publicUser.save(function(err) {
-				if (err) {
-					console.log(err.message);
-					return res.status(400).send({ error: 'Something went wrong. Please try again.' });
-				}
-				PublicUserModel.find({ email: req.body.email}, function(err, userDetails) {
-					if (err) {
-						console.log(err.message)
-					};
-					//console.log(userDetails[0].apikey)
-					res.status(201).send({ email: req.body.email, apikey: userDetails[0].apikey });
+	
+	if (req.body.email == '' || !req.body.email) {
+		res.status(400).send({ error: 'Email cannot be empty.' });
+	}
+	else {
+		PublicUserModel.findOne({ email: req.body.email }, function(err, user) {
+			if (err) throw err;
+			if (!user) {
+				var publicUser = new PublicUserModel({
+					apikey: apikey,
+					email: req.body.email
 				});
-			});
-		}
-		else {
-			res.status(400).send({ error: 'Email with the same Id already exist' });
-		}
-	})
-}
+				
+				publicUser.save(function(err) {
+					if (err) {
+						console.log(err.message);
+						return res.status(400).send({ error: 'Something went wrong. Please try again.' });
+					}
+					PublicUserModel.find({ email: req.body.email}, function(err, userDetails) {
+						if (err) {
+							console.log(err.message)
+						};
+						//console.log(userDetails[0].apikey)
+						res.status(201).send({ email: req.body.email, apikey: userDetails[0].apikey });
+					});
+				});
+			}
+			else {
+				res.status(400).send({ error: 'Email with the same Id already exist' });
+			}
+		})
+	}
 });
 
 
@@ -606,35 +606,35 @@ router.get('/existingpublickey', function(req, res, next) {
 
 router.get("/deviceData/zip", function(req, res,next) {
     var zipCode = req.query.zipCode;
-    var apikey = req.query.key;
+    var apikey = req.query.apikey;
     var responseJson = {
 		status: "",
-		maessage:"",
+		message:"",
         averageUV: null  
 	};
 	
     if(zipCode == null || zipCode == undefined || zipCode == "") {
         responseJson.status = "ERROR";
         responseJson.message = "Request missing Zip code parameter.";
-        res.status(200).send(JSON.stringify(responseJson));
+        res.status(200).send(responseJson);
 	}
     else if(apikey == undefined || apikey == null || apikey == "") {
         responseJson.status = "ERROR";
         responseJson.message = "Request missing apikey parameter.";
-        res.status(200).send(JSON.stringify(responseJson));
+        res.status(200).send(responseJson);
 	}
     else {	
-		PublicUserModel.findOne({ apikey: req.body.apikey }, function(err, user) {
-			if (user !== null) {			
-				DataModel.find({zipCode:req.query.zip},function(err,data){					
+		PublicUserModel.findOne({ apikey: req.query.apikey }, function(err, userapikey) {
+			if (userapikey !== null) {			
+				DataModel.find({zipCode:req.query.zipCode},function(err,data){					
 					if(err){ 
 						//throw err;
 						console.log("DB Error in Get zip");
 					}
-					if(data == null) {
+					if(!data) {
 						responseJson.status="ERROR";
 						responseJson.message="The zip Code does not match in our records.";
-						res.status(401).send(JSON.stringify(responseJson));
+						res.status(401).send(responseJson);
 					}
 					else{
 						var start = new Date();
@@ -642,29 +642,34 @@ router.get("/deviceData/zip", function(req, res,next) {
 						var end = new Date();
 						end.setHours(23, 59, 59, 999);		
 						var dataModelQuery = {
-							$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
+							$and: [ { zip: { $eq: req.query.zipCode} }, { time: { $gte: start, $lt: end} }]
 						}
-						DataModel.aggregate([
-							{ $match : { "zipCode" : zipCode } },
-							{ $group : {
-								_id : null,
-								average : { $avg : "$uv" }
-							}
-							}], function(err, total) { 
+						DataModel.find(dataModelQuery, "uv" ,function(err, dataModelData) {
 							if (err) {
-								responseJson.status = "ERROR";
-								responseJson.message="Invalid request.";
-								res.status(401).send(responseJson);
+								console.log(err.message);
+								responseJson.status="ERROR";
+								responseJson.message="Invalid request. Please try again.";
+								return res.status(401).send(responseJson);
+							}
+							if(dataModelData.length == 0){
+								responseJson.status = "OK";
+								responseJson.message="We do not have todays data logged for this Zip Code.";
+								responseJson.averageUV = 0;
+								return res.status(401).send(responseJson);
 							}
 							else {
-								// Check if documents matched and we have a average
-								if (average.length > 0) {
-									responseJson.averageUV = average[0].average;		    
+								var avg= 0;
+								for(var i in dataModelData){
+									avg+=parseInt(dataModelData[i].uv);
 								}
+								console.log("Total UV value: "+ avg)
+								console.log("Total value: "+ dataModelData.length)
 								responseJson.status = "OK";
-								res.status(200).send(responseJson);
+								responseJson.message="SUCCESS";
+								responseJson.averageUV = parseInt(avg/dataModelData.length);
+								return res.status(201).send(responseJson);
 							}
-						});
+						});						
 					}
 				});
 			}
@@ -678,6 +683,84 @@ router.get("/deviceData/zip", function(req, res,next) {
 	
 });
 
+router.get("/deviceData/city", function(req, res,next) {
+    var city = req.query.city;
+    var apikey = req.query.apikey;
+    var responseJson = {
+		status: "",
+		message:"",
+        averageUV: null  
+	};
+	
+    if(city == null || city == undefined || city == "") {
+        responseJson.status = "ERROR";
+        responseJson.message = "Request missing city parameter.";
+        res.status(200).send(responseJson);
+	}
+    else if(apikey == undefined || apikey == null || apikey == "") {
+        responseJson.status = "ERROR";
+        responseJson.message = "Request missing apikey parameter.";
+        res.status(200).send(responseJson);
+	}
+    else {	
+		PublicUserModel.findOne({ apikey: req.query.apikey }, function(err, userapikey) {
+			if (userapikey !== null) {			
+				DataModel.find({ city : req.query.city},function(err,data){					
+					if(err){ 
+						//throw err;
+						console.log("DB Error in Get zip");
+					}
+					if(!data) {
+						responseJson.status="ERROR";
+						responseJson.message="Given city does not match in our records.";
+						res.status(401).send(responseJson);
+					}
+					else{
+						var start = new Date();
+						start.setHours(0, 0, 0, 0);
+						var end = new Date();
+						end.setHours(23, 59, 59, 999);		
+						var dataModelQuery = {
+							$and: [ { city: { $eq: req.query.city} }, { time: { $gte: start, $lt: end} }]
+						}
+						DataModel.find(dataModelQuery, "uv" ,function(err, dataModelData) {
+							if (err) {
+								console.log(err.message);
+								responseJson.status="ERROR";
+								responseJson.message="Invalid request. Please try again.";
+								return res.status(401).send(responseJson);
+							}
+							if(dataModelData.length == 0){
+								responseJson.status = "OK";
+								responseJson.message="We do not have todays data logged for this city.";
+								responseJson.averageUV = 0;
+								return res.status(401).send(responseJson);
+							}
+							else {
+								var avg= 0;
+								for(var i in dataModelData){
+									avg+= parseInt(dataModelData[i].uv);
+								}
+								console.log("Total UV value: "+ avg)
+								console.log("Total value: "+ dataModelData.length)
+								responseJson.status = "OK";
+								responseJson.message="SUCCESS";
+								responseJson.averageUV = parseInt(avg/dataModelData.length);
+								return res.status(201).send(responseJson);
+							}
+						});						
+					}
+				});
+			}
+			else{
+				responseJson.status = "ERROR";
+				responseJson.message = "Invalid API Key.";
+				res.status(201).send(responseJson);
+			}
+		})
+	}
+	
+});
 
 
 

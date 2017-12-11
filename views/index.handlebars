@@ -288,9 +288,11 @@
 								</div>
 								<div id="deviceData">
 									<div class="row" id="deviceData-content">
-										<div class="col-lg-6 col-sm-6">
+										<div class="col-sm-offset-3 col-lg-6 col-sm-6">
 											<div class="card">
-												<div class="table-wrapper"> </div>
+												<div class="content">
+													<div class="table-wrapper"> </div>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -435,19 +437,61 @@
 								<div>
 									<h2>Example Request</h2>
 									<div class="shadow">
-										<p>https://sunsmart513.duckdns.org/deviceData?zipCode=85719&apikey={API_KEY}</p>
+										<p>https://sunsmart513.duckdns.org/deviceData/zip?zipCode=85719&apikey={API_KEY}</p>
 									</div>
 									
 									<div class="shadow">
-										<p>https://sunsmart513.duckdns.org/deviceData?city=Tucson&apikey={API_KEY}</p>
+										<p>https://sunsmart513.duckdns.org/deviceData/city?city=Tucson&apikey={API_KEY}</p>
 									</div>
 									
-									<div class="shadow">
-										<p>https://sunsmart513.duckdns.org/deviceData?city=Tucson&apikey=abcndgfasACs56sda</p>
-									</div>
 								</div>
+								
 								<hr>
 								
+								<div class="row">
+									<div class="col-sm-offset-3 col-lg-6 col-sm-6">
+										<div class="card">
+											<div class="content">
+												<div id="zipCodelist" >
+													<strong>Get UV Index Based on Zip Code</strong><br/><br/>
+													<div class="zipCodeParameter">
+														<div class="form-group">
+															<label for="zipCode">Enter Zip code</label>
+															<input type="text" id="zipCode" class="form-control">
+															<div class="error11" display="none"></div>
+														</div>
+														<div class="form-group">
+															<label for="apikey1">Your API key</label>
+															<input type="password"  id="apikey1" class="form-control" disabled="disabled">
+															<div class="error12" display="none"> </div>
+														</div>
+													</div>
+													<div class="response1" display="none"> </div>
+													<br/>
+													<button id="button1" class="btn-primary" onclick="getUVdata1()">Get UV index</button>		
+												</li><br/>
+												<hr>
+												<div id="Citylist" >
+													<strong>Get UV Index Based on City</strong><br/><br/>
+													<div class="form-group">
+														<label for="city">Enter City</label>
+														<input id="city" type="text" class="form-control">
+														<div class="error21" display="none"></div>
+													</div>
+													<div class="form-group">
+														<label for="apikey2">Your API key</label>
+														<input id="apikey2" type="password" class="form-control" disabled="disabled">
+														<div class="error22" display="none">
+													</div>
+													<div class="response2" display="none"> </div>	
+													<br/>
+													<button id="button2" class="btn-primary" onclick="getUVdata2()">Get UV index</button>						
+												</li>
+											</div>
+										</div>
+									</div>
+								</div>
+
 							</div>
 						</div>
 						
@@ -518,6 +562,7 @@
 			var authToken='{{{authToken}}}';
 			var username= '{{{username}}}';
 			var devicesList= [];
+			var publicAPIKey = '';
 			$(document).ready(function () {
 				if(authToken != ''){
 					window.localStorage.setItem("authToken", authToken);
@@ -709,7 +754,10 @@
 			function renderPublicKey(data){	
 				$('#publickeyInput').val(data.apikey);
 				$('#publicAPIBtn').remove();
-				$('#publickeyHeading').html('Below is your API key!');			
+				$('#publickeyHeading').html('Below is your API key!');
+				publicAPIKey = data.apikey;
+				$('#apikey1').val(publicAPIKey);
+				$('#apikey2').val(publicAPIKey);
 			}		
 			
 			
@@ -825,7 +873,10 @@
 				if(data.apikey){
 					$('#publickeyInput').val(data.apikey);
 					$('#publicAPIBtn').remove();
-					$('#publickeyHeading').html('Below is your API key!');		
+					$('#publickeyHeading').html('Below is your API key!');
+					publicAPIKey = data.apikey;
+					$('#apikey1').val(publicAPIKey);
+					$('#apikey2').val(publicAPIKey);
 				}
 			}
 			
@@ -892,7 +943,7 @@
 					htmlData += '<thead class="thead-inverse"><tr><th>Time</th><th>UV Exposure</th></tr></thead>';
 					htmlData += '<tbody>'
 					for(var i = len-1; i >= len - 50; i--){
-						console.log(msg[i])						
+						//console.log(msg[i])						
 						if(i == len-50) break;
 						htmlData += '<tr>';
 						htmlData += '<td data-title="Time">' + msg[i].time +'</td><td data-title="UV Exposure">' + msg[i].uv + '</td>';
@@ -913,7 +964,7 @@
 					dataType: "json",
 					success: loadUVData123,
 					error: function (jqXHR) {
-						var error = jqXHR.responseJSON.error;
+						var error = jqXHR.responseJSON;
 						console.log(error);
 					}
 				});
@@ -1070,10 +1121,100 @@
 				}
 			}
 			
-			$('#logoutli').click(function() {
+			$('#logout li').click(function() {
 				$('#logoutInput').val(username);
 				$('#logoutForm').submit();		
 			});
+			
+			function getUVdata1(){				
+				var zipCode = $("#zipCode").val();				
+				if(zipCode == "" && !zipCode){
+					$(".error11").show();
+					var html="<p>The field cannot be empty.<p>"
+					$(".error11").html(html);							
+				}
+				else if(isNaN(zipCode)){
+					var html="<p>Zip code expects a numeric value.<p>"
+					$(".error11").show();
+					$(".error11").html(html);				
+				}
+				else if(publicAPIKey == ''){
+					var html="<p>Get your API Key to get UV INDEX.<p>"
+					$(".error11").html(html);
+					$(".error11").show();				
+				}				
+				else
+				{
+					$(".error11").hide();					
+					var url = '/deviceData/zip?zipCode=';
+					var querystring = encodeURIComponent(zipCode) + "&apikey=" + encodeURIComponent(publicAPIKey);
+					$.ajax({
+						type: "GET",
+						url: url + querystring,
+						dataType: "json",
+						success: loadUVAverage1,
+						error: function (jqXHR) {
+							var error = jqXHR.responseJSON;
+							var html = error.message;
+							$(".error11").html(html); 
+							$(".error11").show();
+							console.log(error);
+						}
+					})
+				}
+			}
+
+			function loadUVAverage1(data){
+				console.log(data);				
+				var zipCode=$("#zipCode").val();
+				var html= '<p style="color: green">The average UV index for the Zip code ' + zipCode + ' is ' + data.averageUV +'.</p>';
+				$(".response1").html(html);	
+				$(".response1").show();		
+			}
+			
+			function getUVdata2(){
+				var city=$("#city").val();				
+				if(city == ""){
+					var html="<p>The field cannot be empty<p>"
+					$(".error21").html(html);
+					$(".error21").show();	
+				}
+				else if(!isNaN(city)){
+					var html="<p>City cannot be a number<p>"
+					$(".error21").html(html);
+					$(".error21").show();
+				}
+				else if(publicAPIKey == ''){
+					var html="<p>Get your API Key to get UV INDEX.<p>"
+					$(".error21").html(html);
+					$(".error21").show();				
+				}
+				else{					
+					$(".error21").hide();
+					var url = '/deviceData/city?city=';
+					var querystring = encodeURIComponent(city) + "&apikey=" + encodeURIComponent(publicAPIKey);;
+					$.ajax({
+						type: "GET",
+						url: url + querystring,
+						dataType: "json",
+						success: loadUVAverage2,
+						error: function (jqXHR) {
+							var error = jqXHR.responseJSON;
+							var html = error.message;
+							$(".error21").html(html)
+							$(".error21").show();							
+						}
+					})
+				}
+			}			
+			
+            function loadUVAverage2(data){
+				var city= $("#city").val();
+				var html= '<p style="color: green">The average UV index for the city ' + city + ' is '+data.averageUV+ '</p>';
+				$(".response2").html(html); 
+				$(".response2").show();
+			}			
+			
 			
 		</script>
 	</body>

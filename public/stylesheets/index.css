@@ -49,3 +49,6 @@
 	max-height: 600px;
 	overflow-y: scroll;
 }
+.error11,.error12,.error21,.error22{			
+	color: red;
+}
