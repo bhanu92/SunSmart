@@ -526,13 +526,18 @@ router.get("/getDeviceData", function(req, res, next) {
 				var dataModelQuery = {
 					$and: [ { deviceId: { $eq: _deviceID} }, { time: { $gte: start, $lt: end} }]
 				};		
-				DataModel.find(dataModelQuery, "time uv" ,function(err, dataModelData) {
+				DataModel.find(dataModelQuery, "time uv city zip" ,function(err, dataModelData) {
 					if (err) {
 						console.log(err.message);
 						return res.status(201).send({"error" : err.message});
 					}
 					else {
-						return res.status(201).send(dataModelData);
+					var avg = 0;
+					for(var i in dataModelData){
+						avg+=parseInt(dataModelData[i].uv);
+					}
+					var averageUV = parseInt(avg/dataModelData.length);
+						return res.status(201).send({ data: dataModelData, averageUV: averageUV});
 					}
 				});
 			}

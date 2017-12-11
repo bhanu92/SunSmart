@@ -52,3 +52,12 @@
 .error11,.error12,.error21,.error22{			
 	color: red;
 }
+
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+th {
+  text-align: center;
+  vertical-align: middle;
+}

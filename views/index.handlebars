@@ -49,6 +49,18 @@
 								<p>UV Index</p>
 							</a>
 						</li>
+						<li id="publicapi" class="da7" onclick="changeView(this)">
+							<a href="javascript:void(0)">
+								<i class="ti-key"></i>
+								<p>SunSmart API</p>
+							</a>
+						</li>
+						<li id="weatherforcast" class="da6" onclick="changeView(this)">
+							<a href="javascript:void(0)">
+								<i class="ti-bolt"></i>
+								<p>Weather Forcast</p>
+							</a>
+						</li>						
 						<li id="healthtips" class="da4" onclick="changeView(this)">
 							<a href="javascript:void(0)">
 								<i class="ti-pulse"></i>
@@ -59,18 +71,6 @@
 							<a href="javascript:void(0)">
 								<i class="ti-user"></i>
 								<p>User Profile</p>
-							</a>
-						</li>
-						<li id="weatherforcast" class="da6" onclick="changeView(this)">
-							<a href="javascript:void(0)">
-								<i class="ti-bolt"></i>
-								<p>Weather Forcast</p>
-							</a>
-						</li>
-						<li id="publicapi" class="da7" onclick="changeView(this)">
-							<a href="javascript:void(0)">
-								<i class="ti-key"></i>
-								<p>SunSmart API</p>
 							</a>
 						</li>						
 					</ul>
@@ -275,7 +275,7 @@
 						
 						<div id="uvindex-content" style="display:none">
 							<div class="row">
-								<div id="NodeviceData">
+								<div id="NodeviceData" style="display: none">
 									<div class="row">
 										<div class="col-lg-6 col-sm-6">
 											<div class="card">
@@ -287,13 +287,30 @@
 									</div>
 								</div>
 								<div id="deviceData">
-									<div class="row" id="deviceData-content">
-										<div class="col-sm-offset-3 col-lg-6 col-sm-6">
+									<div class="row" id="avguvexposed" style="display: none">
+										<div class="col-sm-offset-3 col-lg-7 col-sm-7">
+											<div class="card">
+												<div class="content">
+													<div class="form-group">
+														<Label for="averageUVExposed">Average UV you were Exposed to: </Label>
+														<input id="averageUVExposed" style="color : green;" type="text" class="form-control" disabled="disabled"/> 
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>								
+									<div class="row" id="deviceData-content" style="display: none">
+										<div class="col-sm-offset-3 col-lg-7 col-sm-7">
 											<div class="card">
 												<div class="content">
 													<div class="table-wrapper"> </div>
 												</div>
 											</div>
+										</div>
+									</div>
+									<div class="row" style="padding-bottom: 8px;display:none" id="notedata">
+										<div class="col-sm-offset-3 col-lg-6 col-sm-6">
+											<div style="color:red; font-size:10pt">*City and Zip Code are based on Photon's GPS location.</div>
 										</div>
 									</div>
 								</div>
@@ -932,26 +949,32 @@
 				});
 			}
 			
-			function loadUVData(msg){
+			function loadUVData(message){
+				var msg=message.data;
 				if(msg.length == 0 || msg.error){
 					$('#NodeviceData').show();
 				}
 				else{
 					$('#NodeviceData').hide();
 					var len = msg.length;
-					var htmlData = '<table class="table table-striped table-responsive" style="margin-left: auto; margin-right: auto">';
-					htmlData += '<thead class="thead-inverse"><tr><th>Time</th><th>UV Exposure</th></tr></thead>';
+					var htmlData = '<table class="table table-striped table-responsive" align="center" style="margin-left: auto; margin-right: auto">';
+					htmlData += '<thead class="thead-inverse"><tr><th>Time</th><th>UV Exposure</th><th>City</th><th>ZipCode</th></tr></thead>';
 					htmlData += '<tbody>'
 					for(var i = len-1; i >= len - 50; i--){
 						//console.log(msg[i])						
 						if(i == len-50) break;
 						htmlData += '<tr>';
 						htmlData += '<td data-title="Time">' + msg[i].time +'</td><td data-title="UV Exposure">' + msg[i].uv + '</td>';
+						htmlData += '<td data-title="City">' + msg[i].city +'</td><td data-title="UV Exposure">' + msg[i].zip + '</td>';
 						htmlData += '</tr>';
 					}
 					htmlData += '</tbody>';
 					htmlData += '</table>';
 					$('.table-wrapper').html(htmlData);
+					$('#deviceData-content').show();
+					$('#notedata').show();
+					$('#averageUVExposed').val(message.averageUV);
+					$('#avguvexposed').show();
 				}
 			}
 			
